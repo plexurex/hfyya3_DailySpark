@@ -1,47 +1,41 @@
 package com.yousefwissam.dailyspark
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.yousefwissam.dailyspark.ui.theme.DailySparkTheme
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.ui.HabitAdapter
 
-class MainActivity : ComponentActivity() {
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var habitAdapter: HabitAdapter
+    private lateinit var habitList: List<Habit>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            DailySparkTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+        val addHabitButton = findViewById<Button>(R.id.addHabitButton)
+        addHabitButton.setOnClickListener {
+            val intent = Intent(this, AddHabitActivity::class.java)
+            startActivity(intent)
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        // Initialize habit list with sample data
+        habitList = listOf(
+            Habit("Exercise", "Daily", System.currentTimeMillis()),
+            Habit("Read", "Weekly", System.currentTimeMillis()),
+            Habit("Meditate", "Daily", System.currentTimeMillis())
+        )
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DailySparkTheme {
-        Greeting("Android")
+        // Set up RecyclerView
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        habitAdapter = HabitAdapter(habitList)
+        recyclerView.adapter = habitAdapter
     }
 }
