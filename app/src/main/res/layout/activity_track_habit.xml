@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Habit Name -->
+    <TextView
+        android:id="@+id/habitNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="Habit Name" />
+
+    <!-- Habit Frequency -->
+    <TextView
+        android:id="@+id/habitFrequencyTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="Habit Frequency"
+        android:layout_marginTop="8dp" />
+
+    <!-- Button to track progress -->
+    <Button
+        android:id="@+id/trackProgressButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log Progress"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

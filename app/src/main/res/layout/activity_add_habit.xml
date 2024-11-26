@@ -9,18 +9,18 @@
         android:id="@+id/habitNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Habit Name"/>
+        android:hint="Habit Name" />
 
     <EditText
         android:id="@+id/habitFrequencyInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Frequency (e.g., Daily, Weekly)"/>
+        android:hint="Frequency (e.g., Daily, Weekly)" />
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Habit"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:text="Add Habit" />
 </LinearLayout>

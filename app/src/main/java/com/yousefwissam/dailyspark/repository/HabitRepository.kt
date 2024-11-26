@@ -1,33 +1,23 @@
 package com.yousefwissam.dailyspark.repository
 
 import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.HabitDao
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.yousefwissam.dailyspark.data.HabitDao
+import kotlinx.coroutines.flow.Flow
 
 class HabitRepository(private val habitDao: HabitDao) {
+    val allHabits: Flow<List<Habit>> = habitDao.getAllHabits()
 
-    suspend fun insertHabit(habit: Habit) {
-        withContext(Dispatchers.IO) {
-            habitDao.insertHabit(habit)
-        }
+    fun getHabitById(id: Int): Flow<Habit> = habitDao.getHabitById(id)
+
+    suspend fun insert(habit: Habit) {
+        habitDao.insert(habit)
     }
 
-    suspend fun updateHabit(habit: Habit) {
-        withContext(Dispatchers.IO) {
-            habitDao.updateHabit(habit)
-        }
+    suspend fun deleteHabitById(id: Int) {
+        habitDao.deleteHabitById(id)
     }
 
-    suspend fun deleteHabit(habit: Habit) {
-        withContext(Dispatchers.IO) {
-            habitDao.deleteHabit(habit)
-        }
-    }
-
-    suspend fun getAllHabits(): List<Habit> {
-        return withContext(Dispatchers.IO) {
-            habitDao.getAllHabits()
-        }
+    suspend fun update(habit: Habit) {
+        habitDao.update(habit)
     }
 }
