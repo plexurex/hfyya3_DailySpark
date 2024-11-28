@@ -58,14 +58,9 @@ class MainActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && !snapshot.isEmpty) {
-                    val habits = snapshot.documents.map { document ->
-                        Habit(
-                            id = document.id,
-                            name = document.getString("name") ?: "",
-                            frequency = document.getString("frequency") ?: "",
-                            createdDate = document.getLong("createdDate") ?: 0
-                        )
+                if (snapshot != null) {
+                    val habits = snapshot.documents.mapNotNull { document ->
+                        document.toObject(Habit::class.java)?.copy(id = document.id)
                     }
                     habitAdapter.updateData(habits)
                 }
