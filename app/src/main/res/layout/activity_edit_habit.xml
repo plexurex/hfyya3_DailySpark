@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- RecyclerView to display list of habits available for editing -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewEdit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Edit Habit Name Input Field -->
+    <EditText
+        android:id="@+id/editHabitNameInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Habit Name"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Edit Habit Frequency Input Field -->
+    <EditText
+        android:id="@+id/editHabitFrequencyInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Frequency"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Save Habit Button -->
+    <Button
+        android:id="@+id/saveEditButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Habit"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Delete Habit Button -->
+    <Button
+        android:id="@+id/buttonDeleteHabit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Habit"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white" />
+</LinearLayout>
