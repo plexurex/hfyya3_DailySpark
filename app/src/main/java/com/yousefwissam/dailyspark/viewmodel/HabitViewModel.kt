@@ -1,63 +1,103 @@
 package com.yousefwissam.dailyspark.viewmodel
 
-import android.view.View
-import android.widget.CheckBox
-import android.widget.TextView
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.recyclerview.widget.RecyclerView
-import com.yousefwissam.dailyspark.R
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.repository.HabitRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
-    val allHabits: LiveData<List<Habit>> = repository.allHabits.asLiveData()
+class HabitViewModel : ViewModel() {
 
-    fun insertHabit(habit: Habit) {
+    private val db = FirebaseFirestore.getInstance()
+    private val _habits = MutableLiveData<List<Habit>>()
+    val habits: LiveData<List<Habit>> get() = _habits
+
+    init {
+        loadHabits()
+    }
+
+    private fun loadHabits() {
+        db.collection("habits").get()
+            .addOnSuccessListener { result ->
+                val habitList = result.map { document ->
+                    Habit(
+                        id = document.id,
+                        name = document.getString("name") ?: "",
+                        frequency = document.getString("frequency") ?: "",
+                        createdDate = document.getLong("createdDate") ?: 0,
+                        completed = document.getBoolean("completed") ?: false,
+                        comment = document.getString("comment") ?: ""
+                    )
+                }
+                _habits.value = habitList
+            }
+            .addOnFailureListener {
+                _habits.value = emptyList()
+            }
+    }
+
+    fun addHabit(habit: Habit) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.insert(habit)
+            db.collection("habits").add(habit)
+                .addOnSuccessListener {
+                    loadHabits() // Reload the habits to update the list
+                }
+                .addOnFailureListener {
+                    // Handle failure
+                }
         }
     }
 
     fun updateHabit(habit: Habit) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.update(habit)
+            val habitMap = hashMapOf(
+                "name" to habit.name,
+                "frequency" to habit.frequency,
+                "createdDate" to habit.createdDate,
+                "completed" to habit.completed,
+                "comment" to habit.comment
+            )
+            db.collection("habits").document(habit.id).set(habitMap)
+                .addOnSuccessListener {
+                    loadHabits() // Reload the habits to reflect the updated data
+                }
+                .addOnFailureListener {
+                    // Handle failure
+                }
         }
     }
 
-    fun deleteHabit(id: Int) {
+    fun deleteHabit(habitId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteHabitById(id)
+            db.collection("habits").document(habitId).delete()
+                .addOnSuccessListener {
+                    loadHabits() // Reload the habits to remove the deleted one
+                }
+                .addOnFailureListener {
+                    // Handle failure
+                }
         }
     }
 
-    fun getHabitById(id: Int): LiveData<Habit> {
-        return repository.getHabitById(id).asLiveData()
-    }
-
-    fun deleteHabitById(habitId: Int) {
+    fun markHabitAsCompleted(habit: Habit, comment: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteHabitById(habitId) // Uses repository method
+            val habitMap = hashMapOf(
+                "name" to habit.name,
+                "frequency" to habit.frequency,
+                "createdDate" to habit.createdDate,
+                "completed" to true,
+                "comment" to comment
+            )
+            db.collection("habits").document(habit.id).set(habitMap)
+                .addOnSuccessListener {
+                    loadHabits() // Reload the habits to reflect the updated data
+                }
+                .addOnFailureListener {
+                    // Handle failure
+                }
         }
     }
-}
-
-class HabitViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HabitViewModel::class.java)) {
-            return HabitViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-class HabitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val habitName: TextView = itemView.findViewById(R.id.habitName)
-    val habitFrequency: TextView = itemView.findViewById(R.id.habitFrequency)
-    val habitStreak: TextView = itemView.findViewById(R.id.habitStreak)
-    val habitCheckbox: CheckBox = itemView.findViewById(R.id.habitCheckbox)
 }

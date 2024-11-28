@@ -1,23 +1,62 @@
 package com.yousefwissam.dailyspark.repository
 
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.data.HabitDao
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.tasks.await
 
-class HabitRepository(private val habitDao: HabitDao) {
-    val allHabits: Flow<List<Habit>> = habitDao.getAllHabits()
+class HabitRepository {
 
-    fun getHabitById(id: Int): Flow<Habit> = habitDao.getHabitById(id)
+    private val db = FirebaseFirestore.getInstance()
+    private val habitsCollection = db.collection("habits")
 
-    suspend fun insert(habit: Habit) {
-        habitDao.insert(habit)
+    // Fetch all habits
+    suspend fun getAllHabits(): List<Habit> {
+        return try {
+            val snapshot = habitsCollection.get().await()
+            snapshot.toObjects(Habit::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
-    suspend fun deleteHabitById(id: Int) {
-        habitDao.deleteHabitById(id)
+    // Fetch a specific habit by ID
+    suspend fun getHabitById(id: String): Habit? {
+        return try {
+            val snapshot = habitsCollection.document(id).get().await()
+            snapshot.toObject()
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    suspend fun update(habit: Habit) {
-        habitDao.update(habit)
+    // Insert or update a habit
+    suspend fun insertOrUpdate(habit: Habit) {
+        try {
+            habitsCollection.document(habit.id).set(habit).await()
+        } catch (e: Exception) {
+            // Handle error
+        }
+    }
+
+    // Delete a habit by ID
+    suspend fun deleteHabitById(id: String) {
+        try {
+            habitsCollection.document(id).delete().await()
+        } catch (e: Exception) {
+            // Handle error
+        }
+    }
+
+    // Delete all habits
+    suspend fun deleteAll() {
+        try {
+            val snapshot = habitsCollection.get().await()
+            for (document in snapshot.documents) {
+                habitsCollection.document(document.id).delete().await()
+            }
+        } catch (e: Exception) {
+            // Handle error
+        }
     }
 }

@@ -1,13 +1,12 @@
 package com.yousefwissam.dailyspark.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import java.io.Serializable
 
-@Entity(tableName = "habits")
 data class Habit(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val frequency: String,
-    val createdDate: Long,  // Timestamp of when the habit was created
-    var streak: Int = 0
-)
+    var id: String = "",
+    val name: String = "",
+    val frequency: String = "",
+    val createdDate: Long = 0L,
+    var completed: Boolean = false,        // New field to track if habit is completed
+    var comment: String = ""               // New field to store any comment
+) : Serializable

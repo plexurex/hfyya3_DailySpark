@@ -1,17 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!-- Base theme for other activities (e.g., Splash Screen) -->
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/darkBackgroundColor</item>
+    </style>
 
-        <!-- Customize your theme here. -->
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowActionBar">true</item>
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowActionModeOverlay">false</item>
+    <!-- Theme for MainActivity and other UI components -->
+    <style name="Theme.DailySpark.Main" parent="Theme.DailySpark.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="android:windowBackground">@color/darkBackgroundColor</item>
+        <item name="android:textColor">@color/lightTextColor</item>
+        <item name="fontFamily">@font/daily_spark_font</item>
+    </style>
+
+    <!-- Theme for SettingsActivity -->
+    <style name="Theme.DailySpark.Settings" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="android:windowBackground">@color/darkBackgroundColor</item>
+        <item name="android:textColor">@color/lightTextColor</item>
+    </style>
+
+    <!-- Base theme for MainActivity without a default action bar -->
+    <style name="Theme.DailySpark.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="android:windowBackground">@color/darkBackgroundColor</item>
+        <item name="android:textColor">@color/lightTextColor</item>
+        <item name="fontFamily">@font/daily_spark_font</item>
     </style>
 </resources>

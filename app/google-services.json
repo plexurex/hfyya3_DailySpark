@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "697238550445",
+    "project_id": "dailyspark-e4db6",
+    "storage_bucket": "dailyspark-e4db6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:697238550445:android:49e9d0cb6ac34b03985324",
+        "android_client_info": {
+          "package_name": "com.yousefwissam.dailyspark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChckipQPJRYoj6JvTvqH5PJcYsV2UQs3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

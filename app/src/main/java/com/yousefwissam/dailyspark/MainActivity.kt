@@ -3,45 +3,42 @@ package com.yousefwissam.dailyspark
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.yousefwissam.dailyspark.data.HabitDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.ui.HabitAdapter
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModel
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModelFactory
-import com.yousefwissam.dailyspark.repository.HabitRepository
+import com.yousefwissam.dailyspark.data.Habit
+import androidx.appcompat.widget.Toolbar
+import com.yousefwissam.dailyspark.ui.EditHabitActivity
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var habitAdapter: HabitAdapter
     private lateinit var addHabitButton: Button
+    private lateinit var editHabitButton: Button
 
-    private val viewModel: HabitViewModel by viewModels {
-        val database = HabitDatabase.getDatabase(application)
-        val repository = HabitRepository(database.habitDao())
-        HabitViewModelFactory(repository)
-    }
+    // Initialize Firestore instance
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Set up Toolbar as ActionBar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        habitAdapter = HabitAdapter(
-            mutableListOf(),
-            viewModel
-        ) { habit -> // Handle habit clicks
-            val intent = Intent(this, EditHabitActivity::class.java)
-            intent.putExtra("HABIT_ID", habit.id) // Pass the habit ID
-            startActivity(intent)
+        habitAdapter = HabitAdapter(mutableListOf()) { habit ->
+            navigateToHabitDetails(habit)
         }
         recyclerView.adapter = habitAdapter
 
         addHabitButton = findViewById(R.id.addHabitButton)
-        val editHabitButton: Button = findViewById(R.id.editHabitButton)
+        editHabitButton = findViewById(R.id.editHabitButton)
 
         addHabitButton.setOnClickListener {
             val intent = Intent(this, AddHabitActivity::class.java)
@@ -53,8 +50,31 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        viewModel.allHabits.observe(this) { habits ->
-            habitAdapter.updateData(habits)
-        }
+        // Real-time listener for changes in habits collection
+        db.collection("habits")
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    e.printStackTrace()
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val habits = snapshot.documents.map { document ->
+                        Habit(
+                            id = document.id,
+                            name = document.getString("name") ?: "",
+                            frequency = document.getString("frequency") ?: "",
+                            createdDate = document.getLong("createdDate") ?: 0
+                        )
+                    }
+                    habitAdapter.updateData(habits)
+                }
+            }
+    }
+
+    private fun navigateToHabitDetails(habit: Habit) {
+        val intent = Intent(this, HabitDetailsActivity::class.java)
+        intent.putExtra("HABIT_ID", habit.id)
+        startActivity(intent)
     }
 }

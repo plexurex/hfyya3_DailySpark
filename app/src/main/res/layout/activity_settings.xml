@@ -6,31 +6,28 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/editHabitNameInput"
+    <!-- Notification Switch -->
+    <Switch
+        android:id="@+id/notificationSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Habit Name" />
+        android:text="Enable Notifications" />
 
-    <EditText
-        android:id="@+id/editHabitFrequencyInput"
+    <!-- Theme Switch -->
+    <Switch
+        android:id="@+id/themeSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Habit Frequency" />
+        android:text="Enable Dark Theme" />
 
+    <!-- Delete Data Button -->
     <Button
-        android:id="@+id/saveEditButton"
+        android:id="@+id/deleteDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save Changes"
-        android:layout_gravity="center" />
-
-    <Button
-        android:id="@+id/buttonDeleteHabit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete Habit"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@android:color/holo_red_dark"
+        android:text="Delete All Data"
         android:textColor="@android:color/white" />
 </LinearLayout>

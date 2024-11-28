@@ -4,19 +4,13 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModel
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModelFactory
-import com.yousefwissam.dailyspark.data.HabitDatabase
-import com.yousefwissam.dailyspark.repository.HabitRepository
-import java.util.*
 
 class AddHabitActivity : AppCompatActivity() {
-    private val viewModel: HabitViewModel by viewModels {
-        HabitViewModelFactory(HabitRepository(HabitDatabase.getDatabase(this).habitDao()))
-    }
+
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +25,21 @@ class AddHabitActivity : AppCompatActivity() {
             val frequency = habitFrequencyInput.text.toString().trim()
 
             if (name.isNotEmpty() && frequency.isNotEmpty()) {
-                val currentTime = System.currentTimeMillis()  // Get current time as created date
-                val newHabit = Habit(name = name, frequency = frequency, createdDate = currentTime)
-                viewModel.insertHabit(newHabit)  // Use ViewModel to insert the new habit into the database
-                Toast.makeText(this, "Habit Added: $name - $frequency", Toast.LENGTH_SHORT).show()
-                finish() // Go back to the previous screen
+                val habit = Habit(
+                    name = name,
+                    frequency = frequency,
+                    createdDate = System.currentTimeMillis()
+                )
+
+                db.collection("habits")
+                    .add(habit)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Habit Added: $name", Toast.LENGTH_SHORT).show()
+                        finish() // Close the activity after adding
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to add habit: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
             } else {
                 Toast.makeText(this, "Please enter both fields", Toast.LENGTH_SHORT).show()
             }

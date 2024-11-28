@@ -1,103 +1,124 @@
-package com.yousefwissam.dailyspark
+package com.yousefwissam.dailyspark.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
+import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.data.HabitDatabase
-import com.yousefwissam.dailyspark.repository.HabitRepository
-import com.yousefwissam.dailyspark.ui.HabitAdapter
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModel
-import com.yousefwissam.dailyspark.viewmodel.HabitViewModelFactory
 
 class EditHabitActivity : AppCompatActivity() {
-    private lateinit var recyclerView: RecyclerView
+
+    private lateinit var recyclerViewEdit: RecyclerView
     private lateinit var editHabitNameInput: EditText
     private lateinit var editHabitFrequencyInput: EditText
     private lateinit var saveEditButton: Button
     private lateinit var deleteHabitButton: Button
 
     private lateinit var habitAdapter: HabitAdapter
-    private var selectedHabitId: Int? = null // Track the selected habit's ID
-
-    private val viewModel: HabitViewModel by viewModels {
-        val database = HabitDatabase.getDatabase(application)
-        val repository = HabitRepository(database.habitDao())
-        HabitViewModelFactory(repository)
-    }
+    private val db = FirebaseFirestore.getInstance()
+    private var selectedHabitId: String? = null // Stores the selected habit's ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_habit)
 
         // Initialize UI components
-        recyclerView = findViewById(R.id.recyclerViewEdit)
+        recyclerViewEdit = findViewById(R.id.recyclerViewEdit)
         editHabitNameInput = findViewById(R.id.editHabitNameInput)
         editHabitFrequencyInput = findViewById(R.id.editHabitFrequencyInput)
         saveEditButton = findViewById(R.id.saveEditButton)
         deleteHabitButton = findViewById(R.id.buttonDeleteHabit)
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Initialize HabitAdapter with viewModel for click handling
-        habitAdapter = HabitAdapter(
-            mutableListOf(),
-            viewModel
-        ) { habit -> loadHabitForEditing(habit) } // Pass lambda for habit selection
-        recyclerView.adapter = habitAdapter
-
-        // Observe habits and update the adapter
-        viewModel.allHabits.observe(this) { habits ->
-            if (habits != null) {
-                habitAdapter.updateData(habits)
-            } else {
-                Toast.makeText(this, "No habits found", Toast.LENGTH_SHORT).show()
-            }
+        recyclerViewEdit.layoutManager = LinearLayoutManager(this)
+        habitAdapter = HabitAdapter(mutableListOf()) { habit ->
+            loadHabitForEditing(habit) // Load habit details when user clicks for editing
         }
+        recyclerViewEdit.adapter = habitAdapter
 
-        // Save edited habit
+        // Load all habits into RecyclerView
+        loadAllHabits()
+
+        // Save edited habit details
         saveEditButton.setOnClickListener {
-            val name = editHabitNameInput.text.toString()
-            val frequency = editHabitFrequencyInput.text.toString()
-
-            if (name.isNotEmpty() && frequency.isNotEmpty()) {
-                val habit = Habit(
-                    id = selectedHabitId ?: 0, // Use the selected habit's ID
-                    name = name,
-                    frequency = frequency,
-                    createdDate = System.currentTimeMillis() // Keep created date consistent
-                )
-                viewModel.updateHabit(habit)
-                Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
-                finish() // Close the activity
-            } else {
-                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-            }
+            saveEditedHabit()
         }
 
-        // Delete the selected habit
+        // Delete selected habit
         deleteHabitButton.setOnClickListener {
-            val selectedId = selectedHabitId
-            if (selectedId != null) {
-                viewModel.deleteHabitById(selectedId)
-                Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
-                finish()
-            } else {
-                Toast.makeText(this, "No habit selected to delete", Toast.LENGTH_SHORT).show()
-            }
+            deleteSelectedHabit()
         }
     }
 
+    // Load all habits from Firestore to display in RecyclerView
+    private fun loadAllHabits() {
+        db.collection("habits").get()
+            .addOnSuccessListener { documents ->
+                val habits = documents.map { document ->
+                    Habit(
+                        id = document.id,
+                        name = document.getString("name") ?: "",
+                        frequency = document.getString("frequency") ?: "",
+                        createdDate = document.getLong("createdDate") ?: 0
+                    )
+                }
+                habitAdapter.updateData(habits)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Load selected habit's details into the input fields for editing
     private fun loadHabitForEditing(habit: Habit) {
-        // Populate fields with selected habit's data
+        selectedHabitId = habit.id
         editHabitNameInput.setText(habit.name)
         editHabitFrequencyInput.setText(habit.frequency)
-        selectedHabitId = habit.id // Mark this habit as selected
+    }
+
+    // Save the edited habit details back to Firestore
+    private fun saveEditedHabit() {
+        val name = editHabitNameInput.text.toString()
+        val frequency = editHabitFrequencyInput.text.toString()
+
+        if (name.isNotEmpty() && frequency.isNotEmpty() && selectedHabitId != null) {
+            val updatedHabit = mapOf(
+                "name" to name,
+                "frequency" to frequency
+            )
+            db.collection("habits").document(selectedHabitId!!).update(updatedHabit)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
+                    // Refresh the list after update
+                    loadAllHabits()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error updating habit", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            Toast.makeText(this, "Please select a habit and fill in all fields", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Delete the selected habit from Firestore
+    private fun deleteSelectedHabit() {
+        selectedHabitId?.let {
+            db.collection("habits").document(it).delete()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
+                    // Clear input fields and refresh list
+                    editHabitNameInput.text.clear()
+                    editHabitFrequencyInput.text.clear()
+                    selectedHabitId = null
+                    loadAllHabits()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error deleting habit", Toast.LENGTH_SHORT).show()
+                }
+        } ?: Toast.makeText(this, "Please select a habit to delete", Toast.LENGTH_SHORT).show()
     }
 }
