@@ -3,33 +3,91 @@ package com.yousefwissam.dailyspark
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
-import com.yousefwissam.dailyspark.ui.HabitAdapter
-import com.yousefwissam.dailyspark.data.Habit
-import androidx.appcompat.widget.Toolbar
 import com.yousefwissam.dailyspark.ui.EditHabitActivity
+import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.ui.HabitAdapter
+import com.yousefwissam.dailyspark.ui.HabitDetailsActivity
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var recyclerView: RecyclerView
     private lateinit var habitAdapter: HabitAdapter
-    private lateinit var addHabitButton: Button
-    private lateinit var editHabitButton: Button
-
-    // Initialize Firestore instance
     private val db = FirebaseFirestore.getInstance()
+
+    override fun onResume() {
+        super.onResume()
+        loadAllHabits() // Load habits every time the Main Activity resumes
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Set up Toolbar as ActionBar
+        // Initialize buttons
+        val addHabitButton: Button = findViewById(R.id.addHabitButton)
+        val editHabitButton: Button = findViewById(R.id.editHabitButton)
+
+        addHabitButton.setOnClickListener {
+            startActivity(Intent(this, AddHabitActivity::class.java))
+        }
+
+        editHabitButton.setOnClickListener {
+            startActivity(Intent(this, EditHabitActivity::class.java))
+        }
+
+
+
+        // Set up the Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        // Initialize DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
+
+        // Set up ActionBarDrawerToggle
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Handle navigation item selection
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_main_menu -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                R.id.nav_add_habit -> {
+                    startActivity(Intent(this, AddHabitActivity::class.java))
+                }
+                R.id.nav_edit_habit -> {
+                    startActivity(Intent(this, EditHabitActivity::class.java))
+                }
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                }
+            }
+            drawerLayout.closeDrawers()
+            true
+        }
+
+        // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         habitAdapter = HabitAdapter(mutableListOf()) { habit ->
@@ -37,33 +95,26 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = habitAdapter
 
-        addHabitButton = findViewById(R.id.addHabitButton)
-        editHabitButton = findViewById(R.id.editHabitButton)
+        // Load habits
+        loadAllHabits()
+    }
 
-        addHabitButton.setOnClickListener {
-            val intent = Intent(this, AddHabitActivity::class.java)
-            startActivity(intent)
-        }
-
-        editHabitButton.setOnClickListener {
-            val intent = Intent(this, EditHabitActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Real-time listener for changes in habits collection
-        db.collection("habits")
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    e.printStackTrace()
-                    return@addSnapshotListener
+    private fun loadAllHabits() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("habits").get()
+            .addOnSuccessListener { documents ->
+                val habits = documents.map { document ->
+                    Habit(
+                        id = document.id,
+                        name = document.getString("name") ?: "",
+                        frequency = document.getString("frequency") ?: "",
+                        createdDate = document.getLong("createdDate") ?: 0
+                    )
                 }
-
-                if (snapshot != null) {
-                    val habits = snapshot.documents.mapNotNull { document ->
-                        document.toObject(Habit::class.java)?.copy(id = document.id)
-                    }
-                    habitAdapter.updateData(habits)
-                }
+                habitAdapter.updateData(habits.toMutableList())
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
             }
     }
 

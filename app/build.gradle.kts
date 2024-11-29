@@ -91,6 +91,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-core:21.1.1")
 
+    implementation ("com.google.android.material:material:1.4.0")
+
+
+
 
 
 }

@@ -2,82 +2,58 @@ package com.yousefwissam.dailyspark
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Switch
-import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import com.yousefwissam.dailyspark.ui.EditHabitActivity
 
 class SettingsActivity : AppCompatActivity() {
 
-    private val db = FirebaseFirestore.getInstance()
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val notificationSwitch: Switch = findViewById(R.id.notificationSwitch)
-        val themeSwitch: Switch = findViewById(R.id.themeSwitch)
-        val deleteDataButton: Button = findViewById(R.id.deleteDataButton)
+        // Set up the Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-        // Notification switch logic
-        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                enableNotifications()
-            } else {
-                disableNotifications()
-            }
-        }
+        // Initialize DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
 
-        // Theme switch logic
-        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
+        // Set up ActionBarDrawerToggle
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
 
-        // Delete all habits logic
-        deleteDataButton.setOnClickListener {
-            deleteAllHabits()
-        }
-    }
-
-    private fun enableNotifications() {
-        // Logic to enable notifications
-        Toast.makeText(this, "Notifications Enabled", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun disableNotifications() {
-        // Logic to disable notifications
-        Toast.makeText(this, "Notifications Disabled", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun deleteAllHabits() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val collectionRef = db.collection("habits")
-                val snapshot = collectionRef.get().await()
-                for (document in snapshot.documents) {
-                    document.reference.delete().await()
+        // Handle navigation item selection
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_main_menu -> {
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
-                runOnUiThread {
-                    Toast.makeText(this@SettingsActivity, "All data deleted!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@SettingsActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                R.id.nav_add_habit -> {
+                    startActivity(Intent(this, AddHabitActivity::class.java))
                 }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this@SettingsActivity, "Error deleting data: ${e.message}", Toast.LENGTH_SHORT).show()
+                R.id.nav_edit_habit -> {
+                    startActivity(Intent(this, EditHabitActivity::class.java))
+                }
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
                 }
             }
+            drawerLayout.closeDrawers()
+            true
         }
     }
 }

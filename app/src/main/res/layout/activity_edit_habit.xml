@@ -1,49 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".EditHabitActivity">
 
-    <!-- RecyclerView to display list of habits available for editing -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewEdit"
+    <!-- Main Content Layout -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <!-- Edit Habit Name Input Field -->
-    <EditText
-        android:id="@+id/editHabitNameInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Habit Name"
-        android:layout_marginBottom="16dp" />
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp" />
 
-    <!-- Edit Habit Frequency Input Field -->
-    <EditText
-        android:id="@+id/editHabitFrequencyInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Frequency"
-        android:layout_marginBottom="16dp" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
-    <!-- Save Habit Button -->
-    <Button
-        android:id="@+id/saveEditButton"
+        <!-- Habit Name Input -->
+        <EditText
+            android:id="@+id/editHabitNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Habit Name"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Habit Frequency Input -->
+        <EditText
+            android:id="@+id/editHabitFrequencyInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Frequency"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Save Edit Button -->
+        <Button
+            android:id="@+id/saveEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Habit"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Delete Habit Button -->
+        <Button
+            android:id="@+id/buttonDeleteHabit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Habit"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <!-- Navigation View -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Habit"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Delete Habit Button -->
-    <Button
-        android:id="@+id/buttonDeleteHabit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete Habit"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:textColor="@android:color/white" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/darkBackgroundColor"
+        android:textColor="@color/lightTextColor"
+        app:menu="@menu/drawer_menu"/>
+</androidx.drawerlayout.widget.DrawerLayout>

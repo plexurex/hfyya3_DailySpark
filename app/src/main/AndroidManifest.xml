@@ -14,9 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DailySpark.Main">
 
+
         <!-- Splash Activity -->
-        <activity android:name=".SplashActivity"
-            android:exported="true">
+        <activity android:name=".SplashActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,24 +24,13 @@
         </activity>
 
         <!-- Main Activity -->
-        <activity android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MainActivity" android:exported="true"/>
 
         <!-- Add Habit Activity -->
-        <activity android:name=".AddHabitActivity"
-            android:label="Add Habit"
-            android:exported="true" />
+        <activity android:name=".AddHabitActivity" android:exported="true" />
 
         <!-- Edit Habit Activity -->
-        <activity android:name=".ui.EditHabitActivity"
-            android:label="Edit Habit"
-            android:exported="true"
-            android:theme="@style/Theme.DailySpark.Main" />
+        <activity android:name=".ui.EditHabitActivity" android:exported="true" />
 
         <!-- Edit Habit Details Activity -->
         <activity android:name=".EditHabitDetailsActivity"
@@ -54,17 +43,10 @@
             android:exported="true" />
 
         <!-- Settings Activity -->
-        <activity android:name=".SettingsActivity"
-            android:label="Settings"
-            android:exported="true"
-            android:theme="@style/Theme.DailySpark.Settings" />
+        <activity android:name=".SettingsActivity" android:exported="true" />
 
         <!-- Habit Details Activity -->
-        <activity
-            android:name=".HabitDetailsActivity"
-            android:label="Habit Details"
-            android:exported="true" />
-
+        <activity android:name=".ui.HabitDetailsActivity" android:exported="true"/>
         <!-- Firebase Meta-Data -->
         <meta-data
             android:name="com.google.firebase.analytics.APPLICATION_ID"
