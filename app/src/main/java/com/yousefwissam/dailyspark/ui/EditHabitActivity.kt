@@ -19,6 +19,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.AddHabitActivity
 import com.yousefwissam.dailyspark.MainActivity
+import com.yousefwissam.dailyspark.ProfileActivity
 import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.SettingsActivity
 import com.yousefwissam.dailyspark.data.Habit
@@ -91,6 +92,9 @@ class EditHabitActivity : AppCompatActivity() {
                 }
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
+                }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
                 }
             }
             drawerLayout.closeDrawers()

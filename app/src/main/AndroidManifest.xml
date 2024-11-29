@@ -55,6 +55,11 @@
         <!-- Habit Details Activity -->
         <activity android:name=".ui.HabitDetailsActivity" android:exported="true"/>
         <!-- Firebase Meta-Data -->
+
+        <!-- Profile Activity -->
+        <activity android:name=".ProfileActivity"
+            android:label="Profile"
+            android:exported="true" />
         <meta-data
             android:name="com.google.firebase.analytics.APPLICATION_ID"
             android:value="@string/google_app_id" />

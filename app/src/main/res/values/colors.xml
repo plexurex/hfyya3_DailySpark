@@ -3,7 +3,7 @@
     <color name="primaryColor">#FF4500</color> <!-- Flame orange -->
     <color name="primaryDarkColor">#B22222</color> <!-- Darker red -->
     <color name="accentColor">#FFA500</color> <!-- Bright orange -->
-    <color name="darkBackgroundColor">#D7CFCF</color> <!-- Dark background -->
-    <color name="lightTextColor">#000000</color> <!-- White for text -->
+    <color name="darkBackgroundColor">#D7CFCF</color> <!-- light background -->
+    <color name="lightTextColor">#000000</color> <!-- black for text -->
 
 </resources>

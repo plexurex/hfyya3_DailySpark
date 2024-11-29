@@ -21,6 +21,7 @@ class HabitDetailsActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
     private var habitId: String? = null
+    private val userId = "currentUser" // Assuming you have a way to identify the current user
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +84,10 @@ class HabitDetailsActivity : AppCompatActivity() {
             db.collection("habits").document(habitId!!).update(updates)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
+                    // Update points if the habit is completed
+                    if (completed) {
+                        updatePoints(10) // Assuming 10 points per habit completion
+                    }
                     finish()
                 }
                 .addOnFailureListener {
@@ -91,5 +96,40 @@ class HabitDetailsActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Invalid habit ID", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun updatePoints(points: Int) {
+        val userRewardsDoc = db.collection("rewards").document(userId)
+
+        userRewardsDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val currentPoints = document.getLong("points") ?: 0
+                    val newPoints = currentPoints + points
+                    userRewardsDoc.update("points", newPoints)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Points updated! Total: $newPoints", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error updating points", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    // If record does not exist, create it
+                    val newReward = mapOf(
+                        "badgeName" to "Initial Badge",
+                        "points" to points
+                    )
+                    userRewardsDoc.set(newReward)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Points awarded!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error awarding points", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error fetching reward data", Toast.LENGTH_SHORT).show()
+            }
     }
 }

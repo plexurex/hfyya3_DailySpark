@@ -34,6 +34,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         loadAllHabits() // Load habits every time the Main Activity resumes
     }
+    private val quotes = listOf(
+        "Stay positive and keep building your habits!",
+        "Success is the sum of small efforts repeated day in and day out.",
+        "You are what you repeatedly do. Excellence is not an act, but a habit.",
+        "It's not about having time, it's about making time."
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         editHabitButton.setOnClickListener {
             startActivity(Intent(this, EditHabitActivity::class.java))
         }
+
+        // Set a random motivational quote
+        val quoteTextView: TextView = findViewById(R.id.textViewQuote)
+        val randomQuote = quotes.random()
+        quoteTextView.text = randomQuote
 
 
 
@@ -105,6 +116,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
+                }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
                 }
             }
             drawerLayout.closeDrawers()

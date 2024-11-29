@@ -62,7 +62,19 @@
                 android:textColor="@color/lightTextColor"
                 android:padding="16dp"
                 android:textStyle="bold" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewQuote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="Stay positive and keep building your habits!"
+            android:textColor="@color/lightTextColor"
+            android:textSize="18sp"
+            android:textStyle="italic" />
     </LinearLayout>
 
     <!-- Navigation View (for the drawer) -->

@@ -83,6 +83,9 @@ class AddHabitActivity : AppCompatActivity() {
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                }
             }
             drawerLayout.closeDrawers()
             true
