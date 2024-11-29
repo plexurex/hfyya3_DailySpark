@@ -39,6 +39,11 @@
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:text="Save "
+        android:background="@drawable/button_background"
+        android:textColor="@color/lightTextColor"
+        android:padding="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

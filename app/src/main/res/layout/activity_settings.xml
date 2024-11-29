@@ -28,14 +28,16 @@
             android:id="@+id/notificationSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable Notifications" />
+            android:text="Enable Notifications"
+            android:textSize="18sp" /> <!-- Increase text size here -->
 
         <!-- Theme Switch -->
         <Switch
             android:id="@+id/themeSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable Dark Theme" />
+            android:text="Enable Dark Theme"
+            android:textSize="18sp" /> <!-- Increase text size here -->
 
         <!-- Delete Data Button -->
         <Button
@@ -44,9 +46,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@android:color/holo_red_dark"
-            android:text="Delete All Data"
-            android:textColor="@android:color/white" />
+            android:backgroundTint="@android:color/holo_red_light"
+            android:padding="16dp"
+            android:text="Delete Habit"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Navigation View for Drawer -->

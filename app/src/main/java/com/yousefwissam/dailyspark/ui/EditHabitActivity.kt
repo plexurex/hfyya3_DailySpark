@@ -1,13 +1,17 @@
 package com.yousefwissam.dailyspark.ui
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +46,23 @@ class EditHabitActivity : AppCompatActivity() {
         // Set up the Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+// Set up the custom title TextView for the Toolbar
+        val titleTextView = TextView(this)
+        titleTextView.text = "DailySpark"
+        titleTextView.textSize = 24f // Increase text size
+        titleTextView.setTypeface(null, Typeface.BOLD) // Make it bold
+        titleTextView.setTextColor(ContextCompat.getColor(this, R.color.lightTextColor)) // Set text color
+        titleTextView.layoutParams = Toolbar.LayoutParams(
+            Toolbar.LayoutParams.WRAP_CONTENT,
+            Toolbar.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER // Center the text in the toolbar
+        }
+
+// Remove any default title and add the custom TextView
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.addView(titleTextView)
 
         // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -131,19 +152,20 @@ class EditHabitActivity : AppCompatActivity() {
 
     // Save the edited habit details back to Firestore
     private fun saveEditedHabit() {
-        val name = editHabitNameInput.text.toString()
-        val frequency = editHabitFrequencyInput.text.toString()
+        val name = editHabitNameInput.text.toString().trim()
+        val frequency = editHabitFrequencyInput.text.toString().trim()
 
         if (name.isNotEmpty() && frequency.isNotEmpty() && selectedHabitId != null) {
             val updatedHabit = mapOf(
                 "name" to name,
                 "frequency" to frequency
             )
-            db.collection("habits").document(selectedHabitId!!).update(updatedHabit)
+            db.collection("habits").document(selectedHabitId!!)
+                .update(updatedHabit)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
-                    // Refresh the list after update
                     loadAllHabits()
+                    clearInputFields()
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Error updating habit", Toast.LENGTH_SHORT).show()
@@ -159,15 +181,19 @@ class EditHabitActivity : AppCompatActivity() {
             db.collection("habits").document(it).delete()
                 .addOnSuccessListener {
                     Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
-                    // Clear input fields and refresh list
-                    editHabitNameInput.text.clear()
-                    editHabitFrequencyInput.text.clear()
-                    selectedHabitId = null
                     loadAllHabits()
+                    clearInputFields()
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Error deleting habit", Toast.LENGTH_SHORT).show()
                 }
         } ?: Toast.makeText(this, "Please select a habit to delete", Toast.LENGTH_SHORT).show()
+    }
+
+    // Clear input fields after editing or deleting a habit
+    private fun clearInputFields() {
+        editHabitNameInput.text.clear()
+        editHabitFrequencyInput.text.clear()
+        selectedHabitId = null
     }
 }

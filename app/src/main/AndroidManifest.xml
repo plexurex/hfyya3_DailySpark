@@ -5,6 +5,8 @@
     <!-- Required Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+
 
     <application
         android:allowBackup="true"
@@ -29,8 +31,13 @@
         <!-- Add Habit Activity -->
         <activity android:name=".AddHabitActivity" android:exported="true" />
 
-        <!-- Edit Habit Activity -->
-        <activity android:name=".ui.EditHabitActivity" android:exported="true" />
+        <activity
+            android:name=".ui.EditHabitActivity"
+            android:label="Edit Habit"
+            android:exported="true"
+            android:theme="@style/Theme.DailySpark.Main"
+            android:windowSoftInputMode="adjustPan" />
+
 
         <!-- Edit Habit Details Activity -->
         <activity android:name=".EditHabitDetailsActivity"

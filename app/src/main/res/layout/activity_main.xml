@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="DailySpark"
+            android:text="Habit list"
             android:textSize="24sp"
             android:textStyle="bold"
             android:padding="16dp"
@@ -73,5 +73,7 @@
         android:layout_gravity="start"
         app:menu="@menu/drawer_menu"
         android:background="@color/darkBackgroundColor"
-        android:textColor="@color/lightTextColor"/>
+        android:textColor="@color/lightTextColor"
+        app:itemTextAppearance="@style/NavigationDrawerTextAppearance"/>
+
 </androidx.drawerlayout.widget.DrawerLayout>

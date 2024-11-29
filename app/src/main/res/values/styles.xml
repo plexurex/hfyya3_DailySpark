@@ -32,4 +32,10 @@
         <item name="android:textColor">@color/lightTextColor</item>
         <item name="fontFamily">@font/daily_spark_font</item>
     </style>
+
+    <style name="NavigationDrawerTextAppearance" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">20sp</item> <!-- Set the desired text size -->
+        <item name="android:textColor">@color/lightTextColor</item> <!-- Customize text color if needed -->
+    </style>
+
 </resources>
