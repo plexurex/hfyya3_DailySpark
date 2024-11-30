@@ -4,10 +4,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -28,7 +25,7 @@ class EditHabitActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewEdit: RecyclerView
     private lateinit var editHabitNameInput: EditText
-    private lateinit var editHabitFrequencyInput: EditText
+    private lateinit var spinnerFrequency: Spinner
     private lateinit var saveEditButton: Button
     private lateinit var deleteHabitButton: Button
 
@@ -48,7 +45,7 @@ class EditHabitActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-// Set up the custom title TextView for the Toolbar
+        // Set up the custom title TextView for the Toolbar
         val titleTextView = TextView(this)
         titleTextView.text = "DailySpark"
         titleTextView.textSize = 24f // Increase text size
@@ -61,7 +58,7 @@ class EditHabitActivity : AppCompatActivity() {
             gravity = Gravity.CENTER // Center the text in the toolbar
         }
 
-// Remove any default title and add the custom TextView
+        // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
 
@@ -104,7 +101,7 @@ class EditHabitActivity : AppCompatActivity() {
         // Initialize UI components
         recyclerViewEdit = findViewById(R.id.recyclerViewEdit)
         editHabitNameInput = findViewById(R.id.editHabitNameInput)
-        editHabitFrequencyInput = findViewById(R.id.editHabitFrequencyInput)
+        spinnerFrequency = findViewById(R.id.spinnerFrequency)
         saveEditButton = findViewById(R.id.saveEditButton)
         deleteHabitButton = findViewById(R.id.buttonDeleteHabit)
 
@@ -113,6 +110,15 @@ class EditHabitActivity : AppCompatActivity() {
             loadHabitForEditing(habit) // Load habit details when user clicks for editing
         }
         recyclerViewEdit.adapter = habitAdapter
+
+        // Set up spinner for frequency options
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.frequency_options,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerFrequency.adapter = adapter
 
         // Load all habits into RecyclerView
         loadAllHabits()
@@ -151,13 +157,21 @@ class EditHabitActivity : AppCompatActivity() {
     private fun loadHabitForEditing(habit: Habit) {
         selectedHabitId = habit.id
         editHabitNameInput.setText(habit.name)
-        editHabitFrequencyInput.setText(habit.frequency)
+
+        // Set spinner selection for frequency
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.frequency_options,
+            android.R.layout.simple_spinner_item
+        )
+        val frequencyIndex = adapter.getPosition(habit.frequency)
+        spinnerFrequency.setSelection(frequencyIndex)
     }
 
     // Save the edited habit details back to Firestore
     private fun saveEditedHabit() {
         val name = editHabitNameInput.text.toString().trim()
-        val frequency = editHabitFrequencyInput.text.toString().trim()
+        val frequency = spinnerFrequency.selectedItem.toString()
 
         if (name.isNotEmpty() && frequency.isNotEmpty() && selectedHabitId != null) {
             val updatedHabit = mapOf(
@@ -197,7 +211,7 @@ class EditHabitActivity : AppCompatActivity() {
     // Clear input fields after editing or deleting a habit
     private fun clearInputFields() {
         editHabitNameInput.text.clear()
-        editHabitFrequencyInput.text.clear()
+        spinnerFrequency.setSelection(0)
         selectedHabitId = null
     }
 }

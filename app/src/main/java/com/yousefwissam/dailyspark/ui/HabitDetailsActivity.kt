@@ -7,9 +7,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.worker.ResetHabitWorker
+import java.util.concurrent.TimeUnit
 
 class HabitDetailsActivity : AppCompatActivity() {
 
@@ -57,6 +63,11 @@ class HabitDetailsActivity : AppCompatActivity() {
                         habitFrequencyTextView.text = habit.frequency
                         completedCheckbox.isChecked = habit.completed
                         commentEditText.setText(habit.comment)
+
+                        // Schedule reset based on frequency if already completed
+                        if (habit.completed) {
+                            scheduleHabitReset(habit)
+                        }
                     } else {
                         Toast.makeText(this, "Error loading habit", Toast.LENGTH_SHORT).show()
                         finish()
@@ -87,6 +98,7 @@ class HabitDetailsActivity : AppCompatActivity() {
                     // Update points if the habit is completed
                     if (completed) {
                         updatePoints(10) // Assuming 10 points per habit completion
+                        scheduleHabitReset(getCurrentHabit())
                     }
                     finish()
                 }
@@ -131,5 +143,33 @@ class HabitDetailsActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Error fetching reward data", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun scheduleHabitReset(habit: Habit) {
+        val resetTime = when (habit.frequency) {
+            "Daily" -> 24 * 60 * 60 * 1000L // 24 hours in milliseconds
+            "Weekly" -> 7 * 24 * 60 * 60 * 1000L // 7 days in milliseconds
+            "Monthly" -> 30 * 24 * 60 * 60 * 1000L // 30 days in milliseconds
+            else -> 0L
+        }
+
+        if (resetTime > 0) {
+            val workRequest: WorkRequest = OneTimeWorkRequestBuilder<ResetHabitWorker>()
+                .setInitialDelay(resetTime, TimeUnit.MILLISECONDS)
+                .setInputData(workDataOf("habitId" to habitId.toString()))
+                .build()
+
+            WorkManager.getInstance(applicationContext).enqueue(workRequest)
+        }
+    }
+
+    private fun getCurrentHabit(): Habit {
+        return Habit(
+            id = habitId!!,
+            name = habitNameTextView.text.toString(),
+            frequency = habitFrequencyTextView.text.toString(),
+            completed = completedCheckbox.isChecked,
+            comment = commentEditText.text.toString()
+        )
     }
 }

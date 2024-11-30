@@ -3,4 +3,11 @@
     <string name="title_activity_add_habit">Add Habit</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
+
+    <!-- Added Frequency Options -->
+    <string-array name="frequency_options">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
 </resources>

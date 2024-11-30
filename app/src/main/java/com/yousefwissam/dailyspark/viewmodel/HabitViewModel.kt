@@ -1,15 +1,22 @@
 package com.yousefwissam.dailyspark.viewmodel
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.worker.ResetHabitWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
-class HabitViewModel : ViewModel() {
+class HabitViewModel(private val context: Context) : ViewModel() {  // Context is passed in during ViewModel creation
 
     private val db = FirebaseFirestore.getInstance()
     private val _habits = MutableLiveData<List<Habit>>()
@@ -17,6 +24,22 @@ class HabitViewModel : ViewModel() {
 
     init {
         loadHabits()
+    }
+
+    fun scheduleHabitReset(habit: Habit) {
+        val resetTime = when (habit.frequency) {
+            "Daily" -> 24 * 60 * 60 * 1000L // 24 hours in milliseconds
+            "Weekly" -> 7 * 24 * 60 * 60 * 1000L // 7 days in milliseconds
+            else -> 30 * 24 * 60 * 60 * 1000L // 30 days for Monthly
+        }
+
+        val workRequest = OneTimeWorkRequestBuilder<ResetHabitWorker>()
+            .setInitialDelay(resetTime, TimeUnit.MILLISECONDS)
+            .setInputData(workDataOf("habitId" to habit.id))
+            .build()
+
+        Log.d("WorkManager", "Scheduling reset in ${resetTime / 1000 / 60 / 60} hours")
+        WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     private fun loadHabits() {
@@ -37,67 +60,5 @@ class HabitViewModel : ViewModel() {
             .addOnFailureListener {
                 _habits.value = emptyList()
             }
-    }
-
-    fun addHabit(habit: Habit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.collection("habits").add(habit)
-                .addOnSuccessListener {
-                    loadHabits() // Reload the habits to update the list
-                }
-                .addOnFailureListener {
-                    // Handle failure
-                }
-        }
-    }
-
-    fun updateHabit(habit: Habit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val habitMap = hashMapOf(
-                "name" to habit.name,
-                "frequency" to habit.frequency,
-                "createdDate" to habit.createdDate,
-                "completed" to habit.completed,
-                "comment" to habit.comment
-            )
-            db.collection("habits").document(habit.id).set(habitMap)
-                .addOnSuccessListener {
-                    loadHabits() // Reload the habits to reflect the updated data
-                }
-                .addOnFailureListener {
-                    // Handle failure
-                }
-        }
-    }
-
-    fun deleteHabit(habitId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.collection("habits").document(habitId).delete()
-                .addOnSuccessListener {
-                    loadHabits() // Reload the habits to remove the deleted one
-                }
-                .addOnFailureListener {
-                    // Handle failure
-                }
-        }
-    }
-
-    fun markHabitAsCompleted(habit: Habit, comment: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val habitMap = hashMapOf(
-                "name" to habit.name,
-                "frequency" to habit.frequency,
-                "createdDate" to habit.createdDate,
-                "completed" to true,
-                "comment" to comment
-            )
-            db.collection("habits").document(habit.id).set(habitMap)
-                .addOnSuccessListener {
-                    loadHabits() // Reload the habits to reflect the updated data
-                }
-                .addOnFailureListener {
-                    // Handle failure
-                }
-        }
     }
 }

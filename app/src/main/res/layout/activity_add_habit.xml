@@ -32,12 +32,12 @@
             android:layout_marginTop="16dp" />
 
         <!-- Habit Frequency Input -->
-        <EditText
-            android:id="@+id/habitFrequencyInput"
+        <Spinner
+            android:id="@+id/spinnerFrequency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter frequency (e.g., daily, weekly)"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:entries="@array/frequency_options"/>
 
         <!-- Save Habit Button -->
         <Button

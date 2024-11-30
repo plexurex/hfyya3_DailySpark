@@ -4,10 +4,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -21,8 +18,8 @@ import com.yousefwissam.dailyspark.ui.EditHabitActivity
 class AddHabitActivity : AppCompatActivity() {
 
     private lateinit var habitNameInput: EditText
-    private lateinit var habitFrequencyInput: EditText
     private lateinit var saveHabitButton: Button
+    private lateinit var spinnerFrequency: Spinner
     private val db = FirebaseFirestore.getInstance()
 
     private lateinit var drawerLayout: DrawerLayout
@@ -33,12 +30,11 @@ class AddHabitActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_habit)
 
-
         // Set up the Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-// Set up the custom title TextView for the Toolbar
+        // Set up the custom title TextView for the Toolbar
         val titleTextView = TextView(this)
         titleTextView.text = "DailySpark"
         titleTextView.textSize = 24f // Increase text size
@@ -51,7 +47,7 @@ class AddHabitActivity : AppCompatActivity() {
             gravity = Gravity.CENTER // Center the text in the toolbar
         }
 
-// Remove any default title and add the custom TextView
+        // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
 
@@ -93,12 +89,21 @@ class AddHabitActivity : AppCompatActivity() {
 
         // Initialize views
         habitNameInput = findViewById(R.id.habitNameInput)
-        habitFrequencyInput = findViewById(R.id.habitFrequencyInput)
+        spinnerFrequency = findViewById(R.id.spinnerFrequency)
         saveHabitButton = findViewById(R.id.saveHabitButton)
+
+        // Set up spinner for frequency options
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.frequency_options,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerFrequency.adapter = adapter
 
         saveHabitButton.setOnClickListener {
             val habitName = habitNameInput.text.toString().trim()
-            val habitFrequency = habitFrequencyInput.text.toString().trim()
+            val habitFrequency = spinnerFrequency.selectedItem.toString()
 
             if (habitName.isNotEmpty() && habitFrequency.isNotEmpty()) {
                 val newHabit = Habit(name = habitName, frequency = habitFrequency, createdDate = System.currentTimeMillis())
