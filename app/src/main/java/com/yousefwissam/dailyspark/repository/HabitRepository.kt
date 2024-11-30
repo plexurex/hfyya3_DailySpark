@@ -10,6 +10,15 @@ class HabitRepository {
     private val db = FirebaseFirestore.getInstance()
     private val habitsCollection = db.collection("habits")
 
+    suspend fun markHabitAsCompleted(habit: Habit) {
+        val updatedHabit = habit.copy(
+            completed = true,
+            currentStreak = habit.currentStreak + 1
+        )
+        insertOrUpdate(updatedHabit)
+    }
+
+
     // Fetch all habits
     suspend fun getAllHabits(): List<Habit> {
         return try {

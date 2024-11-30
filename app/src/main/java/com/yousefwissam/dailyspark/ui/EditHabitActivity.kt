@@ -1,5 +1,6 @@
 package com.yousefwissam.dailyspark.ui
 
+
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.AddHabitActivity
 import com.yousefwissam.dailyspark.MainActivity
 import com.yousefwissam.dailyspark.ProfileActivity
+
 import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.SettingsActivity
 import com.yousefwissam.dailyspark.data.Habit

@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,56 +15,57 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DailySpark.Main">
 
-
         <!-- Splash Activity -->
-        <activity android:name=".SplashActivity" android:exported="true">
+        <activity android:name=".SplashActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <!-- Main Activity -->
-        <activity android:name=".MainActivity" android:exported="true"/>
+        <activity android:name=".MainActivity"
+            android:exported="true"/>
 
         <!-- Add Habit Activity -->
-        <activity android:name=".AddHabitActivity" android:exported="true" />
+        <activity android:name=".AddHabitActivity"
+            android:exported="true"/>
 
+        <!-- Edit Habit Activity -->
         <activity
             android:name=".ui.EditHabitActivity"
             android:label="Edit Habit"
             android:exported="true"
             android:theme="@style/Theme.DailySpark.Main"
-            android:windowSoftInputMode="adjustPan" />
-
+            android:windowSoftInputMode="adjustPan"/>
 
         <!-- Edit Habit Details Activity -->
         <activity android:name=".EditHabitDetailsActivity"
             android:label="Edit Habit Details"
-            android:exported="true" />
+            android:exported="true"/>
 
         <!-- Track Habit Activity -->
         <activity android:name=".TrackHabitActivity"
             android:label="Track Habit"
-            android:exported="true" />
+            android:exported="true"/>
 
         <!-- Settings Activity -->
-        <activity android:name=".SettingsActivity" android:exported="true" />
+        <activity android:name=".SettingsActivity"
+            android:exported="true"/>
 
         <!-- Habit Details Activity -->
-        <activity android:name=".ui.HabitDetailsActivity" android:exported="true"/>
-        <!-- Firebase Meta-Data -->
+        <activity android:name=".ui.HabitDetailsActivity"
+            android:exported="true"/>
 
         <!-- Profile Activity -->
         <activity android:name=".ProfileActivity"
             android:label="Profile"
-            android:exported="true" />
+            android:exported="true"/>
+
+        <!-- Firebase Meta-Data -->
         <meta-data
             android:name="com.google.firebase.analytics.APPLICATION_ID"
-            android:value="@string/google_app_id" />
-
-
-
-
+            android:value="@string/google_app_id"/>
     </application>
 </manifest>

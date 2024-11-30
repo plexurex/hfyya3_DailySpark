@@ -28,6 +28,7 @@ class HabitDetailsActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private var habitId: String? = null
     private val userId = "currentUser" // Assuming you have a way to identify the current user
+    private var lastCompletionTime: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,23 @@ class HabitDetailsActivity : AppCompatActivity() {
                         completedCheckbox.isChecked = habit.completed
                         commentEditText.setText(habit.comment)
 
+                        lastCompletionTime = document.getLong("lastCompletionTime") ?: 0L
+                        val currentTime = System.currentTimeMillis()
+
+                        // Check if the habit can be completed based on frequency
+                        val nextAvailableTime = when (habit.frequency) {
+                            "Daily" -> lastCompletionTime + TimeUnit.DAYS.toMillis(1)
+                            "Weekly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(7)
+                            "Monthly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(30)
+                            else -> 0L
+                        }
+
+                        if (currentTime < nextAvailableTime) {
+                            completedCheckbox.isEnabled = false
+                        } else {
+                            completedCheckbox.isEnabled = true
+                        }
+
                         // Schedule reset based on frequency if already completed
                         if (habit.completed) {
                             scheduleHabitReset(habit)
@@ -86,11 +104,27 @@ class HabitDetailsActivity : AppCompatActivity() {
     private fun saveHabitDetails() {
         val completed = completedCheckbox.isChecked
         val comment = commentEditText.text.toString()
+        val currentTime = System.currentTimeMillis()
 
         if (habitId != null) {
+            // Calculate the next available completion time based on frequency
+            val nextAvailableTime = when (habitFrequencyTextView.text.toString()) {
+                "Daily" -> lastCompletionTime + TimeUnit.DAYS.toMillis(1)
+                "Weekly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(7)
+                "Monthly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(30)
+                else -> 0L
+            }
+
+            if (completed && currentTime < nextAvailableTime) {
+                // If user tries to complete before reset, show a message and prevent save
+                Toast.makeText(this, "You need to wait before completing this habit again.", Toast.LENGTH_SHORT).show()
+                return
+            }
+
             val updates = mapOf(
                 "completed" to completed,
-                "comment" to comment
+                "comment" to comment,
+                "lastCompletionTime" to if (completed) currentTime else null
             )
             db.collection("habits").document(habitId!!).update(updates)
                 .addOnSuccessListener {
@@ -98,6 +132,7 @@ class HabitDetailsActivity : AppCompatActivity() {
                     // Update points if the habit is completed
                     if (completed) {
                         updatePoints(10) // Assuming 10 points per habit completion
+                        completedCheckbox.isEnabled = false // Disable checkbox until reset
                         scheduleHabitReset(getCurrentHabit())
                     }
                     finish()

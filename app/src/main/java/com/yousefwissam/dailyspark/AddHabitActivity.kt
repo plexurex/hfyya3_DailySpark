@@ -1,5 +1,6 @@
 package com.yousefwissam.dailyspark
 
+import com.yousefwissam.dailyspark.ProfileActivity
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle

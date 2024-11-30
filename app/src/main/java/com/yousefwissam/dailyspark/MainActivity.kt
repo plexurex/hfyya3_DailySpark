@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
-import com.yousefwissam.dailyspark.ui.EditHabitActivity
 import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.ui.EditHabitActivity
 import com.yousefwissam.dailyspark.ui.HabitAdapter
 import com.yousefwissam.dailyspark.ui.HabitDetailsActivity
 
