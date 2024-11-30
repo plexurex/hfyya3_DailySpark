@@ -5,26 +5,29 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.yousefwissam.dailyspark.R
+import com.google.firebase.auth.FirebaseAuth
+import com.yousefwissam.dailyspark.ui.AuthenticationActivity
 
 class SplashActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Find views using findViewById
-        val logoImageView: ImageView = findViewById(R.id.logoImageView)
-        val progressBar: ProgressBar = findViewById(R.id.progressBar)
-        val loadingText: TextView = findViewById(R.id.loadingText)
+        auth = FirebaseAuth.getInstance()
 
-        // Wait for 3 seconds before transitioning to the MainActivity
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            val currentUser = auth.currentUser
+            if (currentUser != null) {
+                // User is already logged in
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                // User is not logged in
+                startActivity(Intent(this, AuthenticationActivity::class.java))
+            }
             finish()
-        }, 3000) // 3 seconds delay
+        }, 3000) // Show splash screen for 3 seconds
     }
 }

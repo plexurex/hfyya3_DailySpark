@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.yousefwissam.dailyspark.adapter.GoalAdapter
@@ -27,6 +28,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var usernameTextView: TextView
     private lateinit var pointsTextView: TextView
     private lateinit var badgeImageView: ImageView  // Correctly reference the ImageView for badges
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+
 
     // Goal-related UI components
     private lateinit var goalDescriptionEditText: EditText
@@ -104,23 +107,21 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadUserProfile() {
-        profileImageView.setImageResource(R.drawable.profile_pic)  // Use your drawable resource
-
-        db.collection("rewards").document(userId).get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val currentPoints = document.getLong("points") ?: 0
-                    usernameTextView.text = "Yousef Wisam"
-                    pointsTextView.text = "Points: $currentPoints"
-                    displayBadges(currentPoints.toInt())
-                } else {
-                    usernameTextView.text = "Yousef Wisam"
-                    pointsTextView.text = "Points: 0"
+        val user = auth.currentUser
+        user?.let { currentUser ->
+            db.collection("users").document(currentUser.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val name = document.getString("name")
+                        usernameTextView.text = name ?: "User"
+                    } else {
+                        usernameTextView.text = "User"
+                    }
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error loading profile data", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun displayBadges(currentPoints: Int) {

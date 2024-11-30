@@ -14,7 +14,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.yousefwissam.dailyspark.ui.AuthenticationActivity
 import com.yousefwissam.dailyspark.ui.EditHabitActivity
 
 class SettingsActivity : AppCompatActivity() {
@@ -27,8 +29,10 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var deleteGoalsButton: Button
     private lateinit var notificationSwitch: Switch
     private lateinit var themeSwitch: Switch
+    private lateinit var logoutButton: Button
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +99,8 @@ class SettingsActivity : AppCompatActivity() {
         deleteDataButton = findViewById(R.id.deleteDataButton)
         deleteGoalsButton = findViewById(R.id.deleteGoalsButton)
         notificationSwitch = findViewById(R.id.notificationSwitch)
-        themeSwitch = findViewById(R.id.themeSwitch)
+//        themeSwitch = findViewById(R.id.themeSwitch)
+        logoutButton = findViewById(R.id.logoutButton)
 
         // Set click listener to delete all habits and associated goals
         deleteDataButton.setOnClickListener {
@@ -105,6 +110,11 @@ class SettingsActivity : AppCompatActivity() {
         // Set click listener to delete all goals
         deleteGoalsButton.setOnClickListener {
             deleteAllGoals()
+        }
+
+        // Set click listener for logout button
+        logoutButton.setOnClickListener {
+            logoutUser()
         }
     }
 
@@ -153,5 +163,13 @@ class SettingsActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Error deleting all goals", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // Log the user out of the application
+    private fun logoutUser() {
+        auth.signOut()
+        startActivity(Intent(this, AuthenticationActivity::class.java))
+        finish() // Close the settings activity to prevent going back to it
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
 }
