@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation(libs.identity.jvm)
+    implementation(libs.androidx.preference.ktx)
     // Kotlin Coroutines - unify version
     val coroutinesVersion = "1.6.4"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -100,6 +101,9 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
     implementation ("com.google.firebase:firebase-auth:21.0.1")
+    implementation ("androidx.core:core-ktx:1.9.0")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+
 
 
 

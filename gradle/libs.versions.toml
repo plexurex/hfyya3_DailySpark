@@ -29,6 +29,7 @@ junitJunit = "4.12"
 monitor = "1.7.2"
 junitKtx = "1.2.1"
 identityJvm = "202411.1"
+preferenceKtx = "1.2.1"
 
 [libraries]
 androidx-activity-compose-v140 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -69,6 +70,7 @@ junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
 androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
+androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
