@@ -131,7 +131,7 @@ class SettingsActivity : AppCompatActivity() {
         notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             preferences.edit().putBoolean("NOTIFICATION_ENABLED", isChecked).apply()
             if (isChecked) {
-                scheduleDailyNotification()
+                scheduleDailyNotification(this)
                 Toast.makeText(this, "Daily notifications enabled", Toast.LENGTH_SHORT).show()
             } else {
                 cancelDailyNotification()
@@ -196,32 +196,34 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     // Schedule a daily notification using AlarmManager and WorkManager
-    private fun scheduleDailyNotification() {
-        val currentTime = System.currentTimeMillis()
-        val dailyTriggerTime = Calendar.getInstance().apply {
-            timeInMillis = currentTime
-            set(Calendar.HOUR_OF_DAY, 9)  // Schedule for 9 AM
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DAY_OF_YEAR, 1)
-            }
-        }.timeInMillis
-        val delay = dailyTriggerTime - currentTime
+    companion object {
+        fun scheduleDailyNotification(context: Context) {
+            val currentTime = System.currentTimeMillis()
+            val dailyTriggerTime = Calendar.getInstance().apply {
+                timeInMillis = currentTime
+                set(Calendar.HOUR_OF_DAY, 9)  // Schedule for 9 AM
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                if (before(Calendar.getInstance())) {
+                    add(Calendar.DAY_OF_YEAR, 1)
+                }
+            }.timeInMillis
+            val delay = dailyTriggerTime - currentTime
 
-        val dailyWorkRequest = OneTimeWorkRequestBuilder<DailyNotificationWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .addTag("daily_notification_work")
-            .build()
+            val dailyWorkRequest = OneTimeWorkRequestBuilder<DailyNotificationWorker>()
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .addTag("daily_notification_work")
+                .build()
 
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork(
-                "DailyNotificationWork",
-                ExistingWorkPolicy.REPLACE,
-                dailyWorkRequest
-            )
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(
+                    "DailyNotificationWork",
+                    ExistingWorkPolicy.REPLACE,
+                    dailyWorkRequest
+                )
 
-        Toast.makeText(this, "Daily notification scheduled", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Daily notification scheduled", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Cancel the daily notification
