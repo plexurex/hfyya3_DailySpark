@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:src="@drawable/daily_spark_logo" />
 
     <ProgressBar

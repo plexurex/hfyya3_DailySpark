@@ -73,12 +73,68 @@
                     <!-- Badge Display next to Points -->
                     <ImageView
                         android:id="@+id/badgeImageView"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:visibility="gone"/> <!-- Initially hidden, shown when there are points -->
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
+        <!-- Goal Setting Section -->
+        <!-- Goal Setting Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/goalHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Your Goals"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+            <!-- Habit Selection Spinner -->
+            <Spinner
+                android:id="@+id/habitSelectionSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/goalDescriptionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Goal Description (e.g., Complete 30 workouts)" />
+
+            <EditText
+                android:id="@+id/goalTargetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Target Days (e.g., 60)" />
+
+            <Button
+                android:id="@+id/addGoalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Goal" />
+        </LinearLayout>
+
+
+        <!-- Goals List Section -->
+        <TextView
+            android:id="@+id/goalsListHeaderTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Goals"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="16dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/goalsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
 

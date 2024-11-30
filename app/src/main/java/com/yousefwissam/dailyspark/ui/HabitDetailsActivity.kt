@@ -13,6 +13,7 @@ import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.R
+import com.yousefwissam.dailyspark.data.Goal
 import com.yousefwissam.dailyspark.data.Habit
 import com.yousefwissam.dailyspark.worker.ResetHabitWorker
 import java.util.concurrent.TimeUnit
@@ -134,6 +135,7 @@ class HabitDetailsActivity : AppCompatActivity() {
                         updatePoints(10) // Assuming 10 points per habit completion
                         completedCheckbox.isEnabled = false // Disable checkbox until reset
                         scheduleHabitReset(getCurrentHabit())
+                        updateGoalProgress(habitId!!)
                     }
                     finish()
                 }
@@ -196,6 +198,30 @@ class HabitDetailsActivity : AppCompatActivity() {
 
             WorkManager.getInstance(applicationContext).enqueue(workRequest)
         }
+    }
+
+    private fun updateGoalProgress(habitId: String) {
+        db.collection("goals").document(userId).collection("userGoals")
+            .whereEqualTo("habitId", habitId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val goal = document.toObject(Goal::class.java)
+                    val updatedProgress = goal.progress + 1
+                    db.collection("goals").document(userId).collection("userGoals")
+                        .document(document.id)
+                        .update("progress", updatedProgress)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Goal progress updated!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error updating goal progress", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error fetching associated goals", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun getCurrentHabit(): Habit {

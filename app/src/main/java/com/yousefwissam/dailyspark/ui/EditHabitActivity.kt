@@ -1,6 +1,5 @@
 package com.yousefwissam.dailyspark.ui
 
-
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -18,7 +17,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.AddHabitActivity
 import com.yousefwissam.dailyspark.MainActivity
 import com.yousefwissam.dailyspark.ProfileActivity
-
 import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.SettingsActivity
 import com.yousefwissam.dailyspark.data.Habit
@@ -195,12 +193,24 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
-    // Delete the selected habit from Firestore
+    // Delete the selected habit and its associated goals from Firestore
     private fun deleteSelectedHabit() {
-        selectedHabitId?.let {
-            db.collection("habits").document(it).delete()
+        selectedHabitId?.let { habitId ->
+            db.collection("habits").document(habitId).delete()
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
+                    // Delete associated goals
+                    db.collection("goals").document("currentUser").collection("userGoals")
+                        .whereEqualTo("habitId", habitId)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            for (document in documents) {
+                                db.collection("goals").document("currentUser")
+                                    .collection("userGoals")
+                                    .document(document.id)
+                                    .delete()
+                            }
+                        }
+                    Toast.makeText(this, "Habit and associated goals deleted successfully", Toast.LENGTH_SHORT).show()
                     loadAllHabits()
                     clearInputFields()
                 }
