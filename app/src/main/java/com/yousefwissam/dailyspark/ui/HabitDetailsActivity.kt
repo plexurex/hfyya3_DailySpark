@@ -11,6 +11,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.data.Goal
@@ -27,8 +28,10 @@ class HabitDetailsActivity : AppCompatActivity() {
     private lateinit var saveButton: Button
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val userId = auth.currentUser?.uid ?: "currentUser"
+
     private var habitId: String? = null
-    private val userId = "currentUser" // Assuming you have a way to identify the current user
     private var lastCompletionTime: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,14 +151,15 @@ class HabitDetailsActivity : AppCompatActivity() {
     }
 
     private fun updatePoints(points: Int) {
-        val userRewardsDoc = db.collection("rewards").document(userId)
-
-        userRewardsDoc.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
+        val userRewardsDoc = db.collection("rewards").whereEqualTo("userid", userId).get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    // Update the existing reward document
+                    val document = querySnapshot.documents.first()
                     val currentPoints = document.getLong("points") ?: 0
                     val newPoints = currentPoints + points
-                    userRewardsDoc.update("points", newPoints)
+                    db.collection("rewards").document(document.id)
+                        .update("points", newPoints)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Points updated! Total: $newPoints", Toast.LENGTH_SHORT).show()
                         }
@@ -163,12 +167,13 @@ class HabitDetailsActivity : AppCompatActivity() {
                             Toast.makeText(this, "Error updating points", Toast.LENGTH_SHORT).show()
                         }
                 } else {
-                    // If record does not exist, create it
+                    // If no record exists, create a new one
                     val newReward = mapOf(
                         "badgeName" to "Initial Badge",
-                        "points" to points
+                        "points" to points,
+                        "userid" to userId
                     )
-                    userRewardsDoc.set(newReward)
+                    db.collection("rewards").add(newReward)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Points awarded!", Toast.LENGTH_SHORT).show()
                         }

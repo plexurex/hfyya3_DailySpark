@@ -11,6 +11,6 @@ data class Habit(
     var comment: String = "", // Default value for comment
     var currentStreak: Int = 0,  // Tracks the current consecutive days completed
     var longestStreak: Int = 0,   // The longest streak of days the habit has been completed consecutively
-    var lastCompleted: Long = 0 // Timestamp of the last completion
-
+    var lastCompleted: Long = 0, // Timestamp of the last completion
+    var lastCompletionTime: Long = 0L
 ) : Serializable

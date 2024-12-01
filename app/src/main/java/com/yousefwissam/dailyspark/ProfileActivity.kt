@@ -30,7 +30,6 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var badgeImageView: ImageView  // Correctly reference the ImageView for badges
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
-
     // Goal-related UI components
     private lateinit var goalDescriptionEditText: EditText
     private lateinit var goalTargetEditText: EditText
@@ -39,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var goalsRecyclerView: RecyclerView
 
     private val db = FirebaseFirestore.getInstance()
-    private val userId = "currentUser" // Replace with actual user ID
+    private val userId = auth.currentUser?.uid ?: "currentUser" // Get the actual user ID from Firebase Auth
 
     private val goals = mutableListOf<Goal>()
     private val habits = mutableListOf<Habit>()
@@ -74,6 +73,7 @@ class ProfileActivity : AppCompatActivity() {
 
         setupRecyclerView()
         loadUserProfile()
+        loadUserPoints()  // Load user points
         setupNavigation()
         loadUserGoals()
         loadUserHabits()
@@ -122,6 +122,23 @@ class ProfileActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show()
                 }
         }
+    }
+
+    private fun loadUserPoints() {
+        db.collection("rewards").whereEqualTo("userid", userId).get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val document = documents.documents.first()
+                    val currentPoints = document.getLong("points") ?: 0
+                    pointsTextView.text = "Points: $currentPoints"
+                    displayBadges(currentPoints.toInt())  // Update badge based on points
+                } else {
+                    pointsTextView.text = "Points: 0"
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error loading points", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun displayBadges(currentPoints: Int) {

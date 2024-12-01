@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Ensure you have Google services properly declared -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
 
     <application

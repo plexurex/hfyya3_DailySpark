@@ -1,7 +1,5 @@
 package com.yousefwissam.dailyspark
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -22,7 +20,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.notifications.DailyNotificationWorker
-import com.yousefwissam.dailyspark.notifications.NotificationReceiver
 import com.yousefwissam.dailyspark.ui.AuthenticationActivity
 import com.yousefwissam.dailyspark.ui.EditHabitActivity
 import com.yousefwissam.dailyspark.utils.NotificationUtils
