@@ -12,5 +12,6 @@ data class Habit(
     var currentStreak: Int = 0,  // Tracks the current consecutive days completed
     var longestStreak: Int = 0,   // The longest streak of days the habit has been completed consecutively
     var lastCompleted: Long = 0, // Timestamp of the last completion
-    var lastCompletionTime: Long = 0L
+    var lastCompletionTime: Long = 0L,
+    var userId: String = ""
 ) : Serializable

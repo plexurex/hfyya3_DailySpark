@@ -48,7 +48,7 @@
             android:layout_marginTop="16dp"
             android:backgroundTint="@android:color/holo_red_light"
             android:padding="16dp"
-            android:text="Delete Habit"
+            android:text="Delete all Habits"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
         <Button

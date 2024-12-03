@@ -27,7 +27,10 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var profileImageView: ImageView
     private lateinit var usernameTextView: TextView
     private lateinit var pointsTextView: TextView
-    private lateinit var badgeImageView: ImageView  // Correctly reference the ImageView for badges
+    private lateinit var badgeImageView: ImageView
+    private lateinit var editNameIcon: ImageView
+    private lateinit var usernameEditText: EditText
+    private lateinit var saveNameButton: Button
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     // Goal-related UI components
@@ -62,7 +65,28 @@ class ProfileActivity : AppCompatActivity() {
         profileImageView = findViewById(R.id.profileImageView)
         usernameTextView = findViewById(R.id.usernameTextView)
         pointsTextView = findViewById(R.id.pointsTextView)
-        badgeImageView = findViewById(R.id.badgeImageView)  // Correct reference to the ImageView
+        badgeImageView = findViewById(R.id.badgeImageView)
+        editNameIcon = findViewById(R.id.editNameIcon)
+        usernameEditText = findViewById(R.id.usernameEditText)
+        saveNameButton = findViewById(R.id.saveNameButton)
+
+        // Set up edit functionality for username
+        editNameIcon.setOnClickListener {
+            // Show EditText and Save button
+            usernameTextView.visibility = View.GONE
+            usernameEditText.visibility = View.VISIBLE
+            saveNameButton.visibility = View.VISIBLE
+            usernameEditText.setText(usernameTextView.text)
+        }
+
+        saveNameButton.setOnClickListener {
+            val newName = usernameEditText.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                updateUserName(newName)
+            } else {
+                Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Initialize goal-related UI components
         goalDescriptionEditText = findViewById(R.id.goalDescriptionEditText)
@@ -73,7 +97,7 @@ class ProfileActivity : AppCompatActivity() {
 
         setupRecyclerView()
         loadUserProfile()
-        loadUserPoints()  // Load user points
+        loadUserPoints()
         setupNavigation()
         loadUserGoals()
         loadUserHabits()
@@ -114,12 +138,31 @@ class ProfileActivity : AppCompatActivity() {
                     if (document.exists()) {
                         val name = document.getString("name")
                         usernameTextView.text = name ?: "User"
+                        usernameEditText.setText(name ?: "")
                     } else {
                         usernameTextView.text = "User"
                     }
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun updateUserName(newName: String) {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            db.collection("users").document(currentUser.uid)
+                .update("name", newName)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Name updated successfully", Toast.LENGTH_SHORT).show()
+                    usernameTextView.text = newName
+                    usernameTextView.visibility = View.VISIBLE
+                    usernameEditText.visibility = View.GONE
+                    saveNameButton.visibility = View.GONE
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to update name", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -177,39 +220,49 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadUserGoals() {
-        db.collection("goals").document(userId).collection("userGoals").get()
-            .addOnSuccessListener { documents ->
-                goals.clear()
-                for (document in documents) {
-                    val goal = document.toObject<Goal>()
-                    goal.id = document.id
-                    goals.add(goal)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let {
+            db.collection("goals").document(it.uid).collection("userGoals")
+                .get()
+                .addOnSuccessListener { documents ->
+                    goals.clear()
+                    for (document in documents) {
+                        val goal = document.toObject<Goal>()
+                        goal.id = document.id
+                        goals.add(goal)
+                    }
+                    goalAdapter.notifyDataSetChanged()
                 }
-                goalAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error loading goals", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error loading goals", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
-    private fun loadUserHabits() {
-        db.collection("habits").get()
-            .addOnSuccessListener { result ->
-                habits.clear()
-                for (document in result) {
-                    val habit = document.toObject(Habit::class.java)
-                    habit.id = document.id
-                    habits.add(habit)
-                }
 
-                val habitNames = habits.map { it.name }
-                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, habitNames)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                habitSelectionSpinner.adapter = adapter
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
-            }
+    private fun loadUserHabits() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let {
+            db.collection("habits")
+                .whereEqualTo("userId", it.uid) // Filter by user ID
+                .get()
+                .addOnSuccessListener { result ->
+                    habits.clear()
+                    for (document in result) {
+                        val habit = document.toObject(Habit::class.java)
+                        habit.id = document.id
+                        habits.add(habit)
+                    }
+
+                    val habitNames = habits.map { it.name }
+                    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, habitNames)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    habitSelectionSpinner.adapter = adapter
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun addGoal() {

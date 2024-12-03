@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
 import com.yousefwissam.dailyspark.ui.EditHabitActivity
@@ -22,6 +23,7 @@ class AddHabitActivity : AppCompatActivity() {
     private lateinit var saveHabitButton: Button
     private lateinit var spinnerFrequency: Spinner
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -107,8 +109,18 @@ class AddHabitActivity : AppCompatActivity() {
             val habitFrequency = spinnerFrequency.selectedItem.toString()
 
             if (habitName.isNotEmpty() && habitFrequency.isNotEmpty()) {
-                val newHabit = Habit(name = habitName, frequency = habitFrequency, createdDate = System.currentTimeMillis())
-                saveHabitToFirestore(newHabit)
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    val newHabit = Habit(
+                        name = habitName,
+                        frequency = habitFrequency,
+                        createdDate = System.currentTimeMillis(),
+                        userId = userId // Include the user ID
+                    )
+                    saveHabitToFirestore(newHabit)
+                } else {
+                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             }
@@ -116,14 +128,18 @@ class AddHabitActivity : AppCompatActivity() {
     }
 
     private fun saveHabitToFirestore(habit: Habit) {
-        db.collection("habits")
-            .add(habit)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
-                finish() // Go back to the main menu after successfully adding the habit
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error adding habit", Toast.LENGTH_SHORT).show()
-            }
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            val habitWithUserId = habit.copy(userId = it.uid)
+            db.collection("habits")
+                .add(habitWithUserId)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
+                    finish() // Go back to the main menu after successfully adding the habit
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error adding habit", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

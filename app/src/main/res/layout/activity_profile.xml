@@ -28,7 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
             <!-- Profile Image -->
             <ImageView
@@ -47,19 +48,67 @@
                 android:paddingLeft="16dp">
 
                 <!-- User Name -->
-                <TextView
-                    android:id="@+id/usernameTextView"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Username Edit Text (Hidden initially) -->
+                    <EditText
+                        android:id="@+id/usernameEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Enter your name"
+                        android:visibility="gone"
+                        android:padding="8dp"
+                        android:background="@drawable/edittext_background"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/daily_spark_font"/>
+
+                    <!-- Username Text View -->
+                    <TextView
+                        android:id="@+id/usernameTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Yousef Wisam"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/daily_spark_font"/>
+
+                    <!-- Edit Icon to edit the name -->
+                    <ImageView
+                        android:id="@+id/editNameIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_edit"
+                        android:layout_marginStart="8dp"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <!-- Save Button for Username -->
+                <Button
+                    android:id="@+id/saveNameButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Yousef Wisam"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                    android:text="Save"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    android:layout_marginTop="8dp"
+                    android:padding="12dp"
+                    android:background="@drawable/button_background"
+                    android:textColor="@android:color/white"
+                    android:gravity="center" />
 
                 <!-- Points and Badge Container -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="16dp">
 
                     <!-- Points Display -->
                     <TextView
@@ -80,7 +129,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Goal Setting Section -->
         <!-- Goal Setting Section -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,7 +167,6 @@
                 android:layout_height="wrap_content"
                 android:text="Add Goal" />
         </LinearLayout>
-
 
         <!-- Goals List Section -->
         <TextView

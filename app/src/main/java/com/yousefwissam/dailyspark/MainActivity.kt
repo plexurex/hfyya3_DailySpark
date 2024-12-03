@@ -17,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.SettingsActivity.Companion.scheduleDailyNotification
 import com.yousefwissam.dailyspark.data.Habit
@@ -36,22 +37,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     lateinit var habitAdapter: HabitAdapter
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val userId = auth.currentUser?.uid ?: "currentUser" // Get the current logged-in user ID
 
     override fun onResume() {
         super.onResume()
         loadAllHabits() // Load habits every time the Main Activity resumes
     }
+
     private val quotes = listOf(
         "Stay positive and keep building your habits!",
         "Success is the sum of small efforts repeated day in and day out.",
         "You are what you repeatedly do. Excellence is not an act, but a habit.",
-        "It's not about having time, it's about making time."
+        "It's not about having time, it's about making time.",
+        "Dream big. Start small. Act now.",
+        "Your only limit is your mindset.",
+        "Progress beats perfection every time.",
+        "Turn obstacles into opportunities.",
+        "Believe, achieve, repeat."
     )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         // Create Notification Channel (if not already created)
         NotificationUtils.createNotificationChannel(this)
 
@@ -60,9 +69,6 @@ class MainActivity : AppCompatActivity() {
         if (isNotificationEnabled) {
             scheduleDailyNotification(this)
         }
-
-
-
 
         // Initialize buttons
         val addHabitButton: Button = findViewById(R.id.addHabitButton)
@@ -81,15 +87,11 @@ class MainActivity : AppCompatActivity() {
         val randomQuote = quotes.random()
         quoteTextView.text = randomQuote
 
-
-
         // Set up the Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-
-// Set up the custom title TextView for the Toolbar
+        // Set up the custom title TextView for the Toolbar
         val titleTextView = TextView(this)
         titleTextView.text = "DailySpark"
         titleTextView.textSize = 24f // Increase text size
@@ -102,10 +104,9 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.CENTER // Center the text in the toolbar
         }
 
-// Remove any default title and add the custom TextView
+        // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
-
 
         // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -156,23 +157,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadAllHabits() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("habits").get()
-            .addOnSuccessListener { documents ->
-                val habits = documents.map { document ->
-                    Habit(
-                        id = document.id,
-                        name = document.getString("name") ?: "",
-                        frequency = document.getString("frequency") ?: "",
-                        createdDate = document.getLong("createdDate") ?: 0
-                    )
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            db.collection("habits")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val habits = documents.map { document ->
+                        Habit(
+                            id = document.id,
+                            name = document.getString("name") ?: "",
+                            frequency = document.getString("frequency") ?: "",
+                            createdDate = document.getLong("createdDate") ?: 0,
+                            userId = document.getString("userId") ?: ""
+                        )
+                    }
+                    habitAdapter.updateData(habits.toMutableList())
                 }
-                habitAdapter.updateData(habits.toMutableList())
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     private fun navigateToHabitDetails(habit: Habit) {
         val intent = Intent(this, HabitDetailsActivity::class.java)

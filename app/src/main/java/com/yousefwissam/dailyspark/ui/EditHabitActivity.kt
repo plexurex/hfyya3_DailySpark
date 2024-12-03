@@ -13,6 +13,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.AddHabitActivity
 import com.yousefwissam.dailyspark.MainActivity
@@ -31,6 +32,7 @@ class EditHabitActivity : AppCompatActivity() {
 
     private lateinit var habitAdapter: HabitAdapter
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private var selectedHabitId: String? = null // Stores the selected habit's ID
 
     private lateinit var drawerLayout: DrawerLayout
@@ -121,7 +123,7 @@ class EditHabitActivity : AppCompatActivity() {
         spinnerFrequency.adapter = adapter
 
         // Load all habits into RecyclerView
-        loadAllHabits()
+        loadUserHabits()
 
         // Save edited habit details
         saveEditButton.setOnClickListener {
@@ -134,23 +136,29 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
-    // Load all habits from Firestore to display in RecyclerView
-    private fun loadAllHabits() {
-        db.collection("habits").get()
-            .addOnSuccessListener { documents ->
-                val habits = documents.map { document ->
-                    Habit(
-                        id = document.id,
-                        name = document.getString("name") ?: "",
-                        frequency = document.getString("frequency") ?: "",
-                        createdDate = document.getLong("createdDate") ?: 0
-                    )
+    // Load only the current user's habits from Firestore to display in RecyclerView
+    private fun loadUserHabits() {
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            db.collection("habits")
+                .whereEqualTo("userId", it.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val habits = documents.map { document ->
+                        Habit(
+                            id = document.id,
+                            name = document.getString("name") ?: "",
+                            frequency = document.getString("frequency") ?: "",
+                            createdDate = document.getLong("createdDate") ?: 0,
+                            userId = it.uid
+                        )
+                    }
+                    habitAdapter.updateData(habits)
                 }
-                habitAdapter.updateData(habits)
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error loading habits", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     // Load selected habit's details into the input fields for editing
@@ -182,7 +190,7 @@ class EditHabitActivity : AppCompatActivity() {
                 .update(updatedHabit)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
-                    loadAllHabits()
+                    loadUserHabits()
                     clearInputFields()
                 }
                 .addOnFailureListener {
@@ -199,19 +207,19 @@ class EditHabitActivity : AppCompatActivity() {
             db.collection("habits").document(habitId).delete()
                 .addOnSuccessListener {
                     // Delete associated goals
-                    db.collection("goals").document("currentUser").collection("userGoals")
+                    db.collection("goals").document(auth.currentUser!!.uid).collection("userGoals")
                         .whereEqualTo("habitId", habitId)
                         .get()
                         .addOnSuccessListener { documents ->
                             for (document in documents) {
-                                db.collection("goals").document("currentUser")
+                                db.collection("goals").document(auth.currentUser!!.uid)
                                     .collection("userGoals")
                                     .document(document.id)
                                     .delete()
                             }
                         }
                     Toast.makeText(this, "Habit and associated goals deleted successfully", Toast.LENGTH_SHORT).show()
-                    loadAllHabits()
+                    loadUserHabits()
                     clearInputFields()
                 }
                 .addOnFailureListener {

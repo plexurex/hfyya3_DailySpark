@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
 import com.yousefwissam.dailyspark.ui.EditHabitActivity
@@ -27,18 +28,18 @@ class EditHabitDetailsActivity : AppCompatActivity() {
     private lateinit var recyclerViewEdit: RecyclerView
     private lateinit var habitAdapter: HabitAdapter
     private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private var selectedHabitId: String? = null // Stores the selected habit's ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_habit)
 
-
         // Set up the Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-// Set up the custom title TextView for the Toolbar
+        // Set up the custom title TextView for the Toolbar
         val titleTextView = TextView(this)
         titleTextView.text = "DailySpark"
         titleTextView.textSize = 24f // Increase text size
@@ -51,10 +52,9 @@ class EditHabitDetailsActivity : AppCompatActivity() {
             gravity = Gravity.CENTER // Center the text in the toolbar
         }
 
-// Remove any default title and add the custom TextView
+        // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
-
 
         // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -100,21 +100,26 @@ class EditHabitDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadAllHabits() {
-        db.collection("habits").get()
-            .addOnSuccessListener { documents ->
-                val habits = documents.map { document ->
-                    Habit(
-                        id = document.id,
-                        name = document.getString("name") ?: "",
-                        frequency = document.getString("frequency") ?: "",
-                        createdDate = document.getLong("createdDate") ?: 0
-                    )
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            db.collection("habits")
+                .whereEqualTo("userId", currentUser.uid) // Filter habits by the current user's ID
+                .get()
+                .addOnSuccessListener { documents ->
+                    val habits = documents.map { document ->
+                        Habit(
+                            id = document.id,
+                            name = document.getString("name") ?: "",
+                            frequency = document.getString("frequency") ?: "",
+                            createdDate = document.getLong("createdDate") ?: 0
+                        )
+                    }
+                    habitAdapter.updateData(habits)
                 }
-                habitAdapter.updateData(habits)
-            }
-            .addOnFailureListener {
-                // Handle the error
-            }
+                .addOnFailureListener {
+                    // Handle the error
+                }
+        }
     }
 
     private fun loadHabitForEditing(habit: Habit) {
