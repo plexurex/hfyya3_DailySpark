@@ -1,13 +1,11 @@
 package com.yousefwissam.dailyspark.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import com.yousefwissam.dailyspark.data.Habit
 import kotlinx.coroutines.tasks.await
 
-class HabitRepository {
+class HabitRepository(private val db: FirebaseFirestore) {
 
-    private val db = FirebaseFirestore.getInstance()
     private val habitsCollection = db.collection("habits")
 
     suspend fun markHabitAsCompleted(habit: Habit) {
@@ -17,7 +15,6 @@ class HabitRepository {
         )
         insertOrUpdate(updatedHabit)
     }
-
 
     // Fetch all habits
     suspend fun getAllHabits(): List<Habit> {
@@ -33,7 +30,7 @@ class HabitRepository {
     suspend fun getHabitById(id: String): Habit? {
         return try {
             val snapshot = habitsCollection.document(id).get().await()
-            snapshot.toObject()
+            snapshot.toObject(Habit::class.java) // Ensure proper casting
         } catch (e: Exception) {
             null
         }
@@ -44,16 +41,7 @@ class HabitRepository {
         try {
             habitsCollection.document(habit.id).set(habit).await()
         } catch (e: Exception) {
-            // Handle error
-        }
-    }
-
-    // Delete a habit by ID
-    suspend fun deleteHabitById(id: String) {
-        try {
-            habitsCollection.document(id).delete().await()
-        } catch (e: Exception) {
-            // Handle error
+            // Optionally, log or handle the error as needed
         }
     }
 
@@ -65,7 +53,7 @@ class HabitRepository {
                 habitsCollection.document(document.id).delete().await()
             }
         } catch (e: Exception) {
-            // Handle error
+            // Optionally, log or handle the error as needed
         }
     }
 }

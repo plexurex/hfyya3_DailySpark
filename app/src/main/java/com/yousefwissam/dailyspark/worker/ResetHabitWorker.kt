@@ -3,6 +3,7 @@ package com.yousefwissam.dailyspark.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.repository.HabitRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,7 +11,8 @@ import kotlinx.coroutines.withContext
 class ResetHabitWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
-    private val habitRepository = HabitRepository() // Assuming no arguments are needed for the constructor
+    val habitRepository = HabitRepository(FirebaseFirestore.getInstance())
+// Assuming no arguments are needed for the constructor
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val habitId = inputData.getString("habitId") ?: return@withContext Result.failure()

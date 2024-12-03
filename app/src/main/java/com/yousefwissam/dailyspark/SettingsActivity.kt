@@ -37,11 +37,12 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var notificationSwitch: Switch
     private lateinit var logoutButton: Button
 
-    private val db = FirebaseFirestore.getInstance()
-    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    // FirebaseFirestore and FirebaseAuth instances, marked as lateinit for injection during testing
+    lateinit var db: FirebaseFirestore
+    lateinit var auth: FirebaseAuth
 
     // SharedPreferences for saving notification switch state
-    private val preferences: SharedPreferences by lazy {
+    val preferences: SharedPreferences by lazy {
         getSharedPreferences("com.yousefwissam.dailyspark.PREFERENCES", Context.MODE_PRIVATE)
     }
 
@@ -49,10 +50,55 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        // Initialize Firebase instances only if not running in a test environment
+        if (!isRunningInTest()) {
+            initializeFirebase()
+        }
+
         // Create Notification Channel
         NotificationUtils.createNotificationChannel(this)
 
         // Set up the Toolbar
+        setupToolbar()
+
+        // Initialize DrawerLayout and NavigationView
+        setupNavigation()
+
+        // Initialize UI components
+        initializeUIComponents()
+
+        // Load the saved notification switch state
+        val isNotificationEnabled = preferences.getBoolean("NOTIFICATION_ENABLED", false)
+        notificationSwitch.isChecked = isNotificationEnabled
+
+        // Set click listeners for buttons
+        setButtonListeners()
+    }
+
+    // Initialize Firebase instances
+    private fun initializeFirebase() {
+        db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+    }
+
+    // Method to inject dependencies for testing purposes
+    fun injectDependencies(auth: FirebaseAuth, db: FirebaseFirestore) {
+        this.auth = auth
+        this.db = db
+    }
+
+    // Utility function to determine if we're running in a test environment
+    private fun isRunningInTest(): Boolean {
+        return try {
+            Class.forName("org.robolectric.Robolectric")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
+
+    // Set up the Toolbar
+    private fun setupToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -72,12 +118,15 @@ class SettingsActivity : AppCompatActivity() {
         // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
+    }
 
-        // Initialize DrawerLayout and NavigationView
+    // Set up DrawerLayout and NavigationView
+    private fun setupNavigation() {
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.navigationView)
 
         // Set up ActionBarDrawerToggle
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
         toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
             R.string.navigation_drawer_open,
@@ -98,17 +147,18 @@ class SettingsActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
+    }
 
-        // Initialize UI components
+    // Initialize UI components
+    private fun initializeUIComponents() {
         deleteDataButton = findViewById(R.id.deleteDataButton)
         deleteGoalsButton = findViewById(R.id.deleteGoalsButton)
         notificationSwitch = findViewById(R.id.notificationSwitch)
         logoutButton = findViewById(R.id.logoutButton)
+    }
 
-        // Load the saved notification switch state
-        val isNotificationEnabled = preferences.getBoolean("NOTIFICATION_ENABLED", false)
-        notificationSwitch.isChecked = isNotificationEnabled
-
+    // Set button listeners
+    private fun setButtonListeners() {
         // Set click listener to delete all habits and associated goals
         deleteDataButton.setOnClickListener {
             deleteAllHabits()
@@ -185,7 +235,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     // Log the user out of the application
-    private fun logoutUser() {
+    fun logoutUser() {
         auth.signOut()
         startActivity(Intent(this, AuthenticationActivity::class.java))
         finish() // Close the settings activity to prevent going back to it

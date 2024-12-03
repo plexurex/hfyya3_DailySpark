@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var recyclerView: RecyclerView
-    private lateinit var habitAdapter: HabitAdapter
+    lateinit var habitAdapter: HabitAdapter
     private val db = FirebaseFirestore.getInstance()
 
     override fun onResume() {
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         loadAllHabits()
     }
 
-    private fun loadAllHabits() {
+    fun loadAllHabits() {
         val db = FirebaseFirestore.getInstance()
         db.collection("habits").get()
             .addOnSuccessListener { documents ->

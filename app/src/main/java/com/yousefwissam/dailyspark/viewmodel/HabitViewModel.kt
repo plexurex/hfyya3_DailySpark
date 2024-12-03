@@ -9,16 +9,18 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.repository.HabitRepository
 import com.yousefwissam.dailyspark.worker.ResetHabitWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class HabitViewModel(private val context: Context) : ViewModel() {  // Context is passed in during ViewModel creation
+class HabitViewModel(
+    private val repository: HabitRepository,
+    private val context: Context
+) : ViewModel() {
 
-    private val db = FirebaseFirestore.getInstance()
     private val _habits = MutableLiveData<List<Habit>>()
     val habits: LiveData<List<Habit>> get() = _habits
 
@@ -42,23 +44,14 @@ class HabitViewModel(private val context: Context) : ViewModel() {  // Context i
         WorkManager.getInstance(context).enqueue(workRequest)
     }
 
-    private fun loadHabits() {
-        db.collection("habits").get()
-            .addOnSuccessListener { result ->
-                val habitList = result.map { document ->
-                    Habit(
-                        id = document.id,
-                        name = document.getString("name") ?: "",
-                        frequency = document.getString("frequency") ?: "",
-                        createdDate = document.getLong("createdDate") ?: 0,
-                        completed = document.getBoolean("completed") ?: false,
-                        comment = document.getString("comment") ?: ""
-                    )
-                }
-                _habits.value = habitList
+    fun loadHabits() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val habitList = repository.getAllHabits()
+                _habits.postValue(habitList)
+            } catch (e: Exception) {
+                _habits.postValue(emptyList())
             }
-            .addOnFailureListener {
-                _habits.value = emptyList()
-            }
+        }
     }
 }
