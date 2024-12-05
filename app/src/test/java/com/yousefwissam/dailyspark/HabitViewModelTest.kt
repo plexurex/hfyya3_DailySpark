@@ -3,8 +3,8 @@ package com.yousefwissam.dailyspark
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.repository.HabitRepository
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.data.repository.HabitRepository
 import com.yousefwissam.dailyspark.viewmodel.HabitViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

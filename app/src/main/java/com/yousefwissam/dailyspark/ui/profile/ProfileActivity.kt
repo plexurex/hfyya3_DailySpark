@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark
+package com.yousefwissam.dailyspark.ui.profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +14,14 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import com.yousefwissam.dailyspark.ui.main.MainActivity
+import com.yousefwissam.dailyspark.R
+import com.yousefwissam.dailyspark.ui.settings.SettingsActivity
 import com.yousefwissam.dailyspark.adapter.GoalAdapter
-import com.yousefwissam.dailyspark.data.Goal
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.ui.EditHabitActivity
+import com.yousefwissam.dailyspark.data.model.Goal
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.ui.habit.EditHabitActivity
+import com.yousefwissam.dailyspark.ui.habit.AddHabitActivity
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -58,7 +62,8 @@ class ProfileActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.navigationView)
         toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar,
-            R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 

@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark
+package com.yousefwissam.dailyspark.ui.settings
 
 import android.content.Context
 import android.content.Intent
@@ -11,6 +11,7 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -19,9 +20,13 @@ import androidx.work.*
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.notifications.DailyNotificationWorker
 import com.yousefwissam.dailyspark.ui.AuthenticationActivity
-import com.yousefwissam.dailyspark.ui.EditHabitActivity
+import com.yousefwissam.dailyspark.ui.habit.EditHabitActivity
+import com.yousefwissam.dailyspark.ui.habit.AddHabitActivity
+import com.yousefwissam.dailyspark.ui.main.MainActivity
+import com.yousefwissam.dailyspark.ui.profile.ProfileActivity
 import com.yousefwissam.dailyspark.utils.NotificationUtils
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -37,11 +42,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var notificationSwitch: Switch
     private lateinit var logoutButton: Button
 
-    // FirebaseFirestore and FirebaseAuth instances, marked as lateinit for injection during testing
     lateinit var db: FirebaseFirestore
     lateinit var auth: FirebaseAuth
 
-    // SharedPreferences for saving notification switch state
     val preferences: SharedPreferences by lazy {
         getSharedPreferences("com.yousefwissam.dailyspark.PREFERENCES", Context.MODE_PRIVATE)
     }
@@ -50,44 +53,31 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // Initialize Firebase instances only if not running in a test environment
         if (!isRunningInTest()) {
             initializeFirebase()
         }
 
-        // Create Notification Channel
         NotificationUtils.createNotificationChannel(this)
-
-        // Set up the Toolbar
         setupToolbar()
-
-        // Initialize DrawerLayout and NavigationView
         setupNavigation()
-
-        // Initialize UI components
         initializeUIComponents()
 
-        // Load the saved notification switch state
         val isNotificationEnabled = preferences.getBoolean("NOTIFICATION_ENABLED", false)
         notificationSwitch.isChecked = isNotificationEnabled
 
-        // Set click listeners for buttons
         setButtonListeners()
     }
 
-    // Initialize Firebase instances
     private fun initializeFirebase() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
     }
 
-    // Method to inject dependencies for testing purposes
     fun injectDependencies(auth: FirebaseAuth, db: FirebaseFirestore) {
         this.auth = auth
         this.db = db
     }
 
-    // Utility function to determine if we're running in a test environment
     private fun isRunningInTest(): Boolean {
         return try {
             Class.forName("org.robolectric.Robolectric")
@@ -97,35 +87,30 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    // Set up the Toolbar
     private fun setupToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Set up the custom title TextView for the Toolbar
         val titleTextView = TextView(this)
         titleTextView.text = "DailySpark"
-        titleTextView.textSize = 24f // Increase text size
-        titleTextView.setTypeface(null, Typeface.BOLD) // Make it bold
-        titleTextView.setTextColor(ContextCompat.getColor(this, R.color.lightTextColor)) // Set text color
+        titleTextView.textSize = 24f
+        titleTextView.setTypeface(null, Typeface.BOLD)
+        titleTextView.setTextColor(ContextCompat.getColor(this, R.color.lightTextColor))
         titleTextView.layoutParams = Toolbar.LayoutParams(
             Toolbar.LayoutParams.WRAP_CONTENT,
             Toolbar.LayoutParams.WRAP_CONTENT
         ).apply {
-            gravity = Gravity.CENTER // Center the text in the toolbar
+            gravity = Gravity.CENTER
         }
 
-        // Remove any default title and add the custom TextView
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
     }
 
-    // Set up DrawerLayout and NavigationView
     private fun setupNavigation() {
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.navigationView)
 
-        // Set up ActionBarDrawerToggle
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
@@ -135,7 +120,6 @@ class SettingsActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Handle navigation item selection
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_main_menu -> startActivity(Intent(this, MainActivity::class.java))
@@ -149,7 +133,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    // Initialize UI components
     private fun initializeUIComponents() {
         deleteDataButton = findViewById(R.id.deleteDataButton)
         deleteGoalsButton = findViewById(R.id.deleteGoalsButton)
@@ -157,47 +140,51 @@ class SettingsActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logoutButton)
     }
 
-    // Set button listeners
     private fun setButtonListeners() {
-        // Set click listener to delete all habits and associated goals
         deleteDataButton.setOnClickListener {
             deleteAllHabits()
         }
 
-        // Set click listener to delete all goals
         deleteGoalsButton.setOnClickListener {
             deleteAllGoals()
         }
 
-        // Set click listener for logout button
         logoutButton.setOnClickListener {
             logoutUser()
         }
 
-        // Set listener for notification switch
         notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            preferences.edit().putBoolean("NOTIFICATION_ENABLED", isChecked).apply()
             if (isChecked) {
-                scheduleDailyNotification(this)
-                Toast.makeText(this, "Daily notifications enabled", Toast.LENGTH_SHORT).show()
+                // Ask for user permission to enable notifications
+                val dialog = AlertDialog.Builder(this)
+                    .setTitle("Enable Notifications")
+                    .setMessage("Would you like to receive daily motivational notifications?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        preferences.edit().putBoolean("NOTIFICATION_ENABLED", true).apply()
+                        scheduleDailyNotification(this)
+                        Toast.makeText(this, "Daily notifications enabled", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("No") { _, _ ->
+                        notificationSwitch.isChecked = false
+                    }
+                    .create()
+                dialog.show()
             } else {
+                preferences.edit().putBoolean("NOTIFICATION_ENABLED", false).apply()
                 cancelDailyNotification()
                 Toast.makeText(this, "Daily notifications disabled", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Delete all habits and their associated goals from Firestore
     private fun deleteAllHabits() {
         db.collection("habits").get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     val habitId = document.id
 
-                    // Delete the habit itself
                     db.collection("habits").document(habitId).delete()
 
-                    // Delete associated goals
                     db.collection("goals").document("currentUser").collection("userGoals")
                         .whereEqualTo("habitId", habitId)
                         .get()
@@ -217,7 +204,6 @@ class SettingsActivity : AppCompatActivity() {
             }
     }
 
-    // Delete all goals from Firestore
     private fun deleteAllGoals() {
         db.collection("goals").document("currentUser").collection("userGoals").get()
             .addOnSuccessListener { documents ->
@@ -234,21 +220,19 @@ class SettingsActivity : AppCompatActivity() {
             }
     }
 
-    // Log the user out of the application
     fun logoutUser() {
         auth.signOut()
         startActivity(Intent(this, AuthenticationActivity::class.java))
-        finish() // Close the settings activity to prevent going back to it
+        finish()
         Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
 
-    // Schedule a daily notification using AlarmManager and WorkManager
     companion object {
         fun scheduleDailyNotification(context: Context) {
             val currentTime = System.currentTimeMillis()
             val dailyTriggerTime = Calendar.getInstance().apply {
                 timeInMillis = currentTime
-                set(Calendar.HOUR_OF_DAY, 9)  // Schedule for 9 AM
+                set(Calendar.HOUR_OF_DAY, 9)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 if (before(Calendar.getInstance())) {
@@ -273,7 +257,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    // Cancel the daily notification
     private fun cancelDailyNotification() {
         WorkManager.getInstance(this).cancelUniqueWork("DailyNotificationWork")
         Toast.makeText(this, "Daily notification cancelled", Toast.LENGTH_SHORT).show()

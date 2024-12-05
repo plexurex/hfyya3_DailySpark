@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark.data
+package com.yousefwissam.dailyspark.data.model
 
 import java.io.Serializable
 

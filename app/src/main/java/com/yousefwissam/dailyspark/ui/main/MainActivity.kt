@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark
+package com.yousefwissam.dailyspark.ui.main
 
 import android.content.Context
 import android.content.Intent
@@ -16,33 +16,29 @@ import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.yousefwissam.dailyspark.SettingsActivity.Companion.scheduleDailyNotification
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.ui.EditHabitActivity
-import com.yousefwissam.dailyspark.ui.HabitAdapter
-import com.yousefwissam.dailyspark.ui.HabitDetailsActivity
+import com.yousefwissam.dailyspark.R
+import com.yousefwissam.dailyspark.ui.settings.SettingsActivity
+import com.yousefwissam.dailyspark.ui.settings.SettingsActivity.Companion.scheduleDailyNotification
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.ui.habit.EditHabitActivity
+import com.yousefwissam.dailyspark.adapter.HabitAdapter
+import com.yousefwissam.dailyspark.ui.habit.HabitDetailsActivity
+import com.yousefwissam.dailyspark.ui.habit.AddHabitActivity
+import com.yousefwissam.dailyspark.ui.profile.ProfileActivity
 import com.yousefwissam.dailyspark.utils.NotificationUtils
 
 class MainActivity : AppCompatActivity() {
-    private val preferences: SharedPreferences by lazy {
-        getSharedPreferences("com.yousefwissam.dailyspark.PREFERENCES", Context.MODE_PRIVATE)
+    companion object {
+        const val RC_SIGN_IN = 123
     }
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
-    private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var recyclerView: RecyclerView
-    lateinit var habitAdapter: HabitAdapter
-    private val db = FirebaseFirestore.getInstance()
-    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val userId = auth.currentUser?.uid ?: "currentUser" // Get the current logged-in user ID
-
-    override fun onResume() {
-        super.onResume()
-        loadAllHabits() // Load habits every time the Main Activity resumes
+    private val preferences: SharedPreferences by lazy {
+        getSharedPreferences("com.yousefwissam.dailyspark.PREFERENCES", Context.MODE_PRIVATE)
     }
 
     private val quotes = listOf(
@@ -57,9 +53,28 @@ class MainActivity : AppCompatActivity() {
         "Believe, achieve, repeat."
     )
 
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var recyclerView: RecyclerView
+    lateinit var habitAdapter: HabitAdapter
+    private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val userId get() = auth.currentUser?.uid ?: "currentUser"
+
+    override fun onResume() {
+        super.onResume()
+        loadAllHabits() // Load habits every time the Main Activity resumes
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Firebase Authentication Check
+        if (auth.currentUser == null) {
+            startFirebaseSignIn()
+        }
 
         // Create Notification Channel (if not already created)
         NotificationUtils.createNotificationChannel(this)
@@ -156,6 +171,37 @@ class MainActivity : AppCompatActivity() {
         loadAllHabits()
     }
 
+    private fun startFirebaseSignIn() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build()
+        )
+
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build(),
+            RC_SIGN_IN
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                Toast.makeText(this, "Sign-in successful!", Toast.LENGTH_SHORT).show()
+                loadAllHabits()
+            } else {
+                // Sign-in failed
+                response?.error?.let {
+                    Toast.makeText(this, "Sign-in failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     fun loadAllHabits() {
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -181,7 +227,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun navigateToHabitDetails(habit: Habit) {
         val intent = Intent(this, HabitDetailsActivity::class.java)

@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.core.ktx)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.rules)
     testImplementation(libs.androidx.rules)
 
     // Kotlin Coroutines
@@ -120,6 +121,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore")
     implementation ("com.google.firebase:firebase-analytics")
     implementation ("com.google.protobuf:protobuf-javalite:3.21.0")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.0")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+
 
 
 }

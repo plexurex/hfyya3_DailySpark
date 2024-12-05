@@ -1,8 +1,8 @@
 package com.yousefwissam.dailyspark
 
-import com.yousefwissam.dailyspark.data.Goal
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.data.Reward
+import com.yousefwissam.dailyspark.data.model.Goal
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.data.model.Reward
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

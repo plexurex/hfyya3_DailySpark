@@ -1,7 +1,7 @@
-package com.yousefwissam.dailyspark.repository
+package com.yousefwissam.dailyspark.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.data.model.Habit
 import kotlinx.coroutines.tasks.await
 
 class HabitRepository(private val db: FirebaseFirestore) {

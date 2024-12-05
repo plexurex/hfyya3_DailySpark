@@ -13,8 +13,8 @@
     <!-- Ensure you have Google services properly declared -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-
     <application
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,8 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DailySpark.Main">
         <activity android:name=".ui.AuthenticationActivity" />
+
         <!-- Splash Activity -->
-        <activity android:name=".SplashActivity"
+        <activity android:name=".ui.main.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -36,53 +37,62 @@
             android:name=".notifications.BootReceiver"
             android:enabled="true"
             android:exported="false">
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-        </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
         </receiver>
 
         <!-- Main Activity -->
-        <activity android:name=".MainActivity"
+        <activity android:name=".ui.main.MainActivity"
             android:exported="true"/>
 
         <!-- Add Habit Activity -->
-        <activity android:name=".AddHabitActivity"
+        <activity android:name=".ui.habit.AddHabitActivity"
             android:exported="true"/>
 
         <!-- Edit Habit Activity -->
         <activity
-            android:name=".ui.EditHabitActivity"
+            android:name=".ui.habit.EditHabitActivity"
             android:label="Edit Habit"
             android:exported="true"
             android:theme="@style/Theme.DailySpark.Main"
             android:windowSoftInputMode="adjustPan"/>
 
         <!-- Edit Habit Details Activity -->
-        <activity android:name=".EditHabitDetailsActivity"
+        <activity android:name=".ui.habit.EditHabitDetailsActivity"
             android:label="Edit Habit Details"
             android:exported="true"/>
 
         <!-- Track Habit Activity -->
-        <activity android:name=".TrackHabitActivity"
+        <activity android:name=".ui.habit.TrackHabitActivity"
             android:label="Track Habit"
             android:exported="true"/>
 
         <!-- Settings Activity -->
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".ui.settings.SettingsActivity"
             android:exported="true"/>
 
         <!-- Habit Details Activity -->
-        <activity android:name=".ui.HabitDetailsActivity"
+        <activity android:name=".ui.habit.HabitDetailsActivity"
             android:exported="true"/>
 
         <!-- Profile Activity -->
-        <activity android:name=".ProfileActivity"
+        <activity android:name=".ui.profile.ProfileActivity"
             android:label="Profile"
             android:exported="true"/>
+
+        <!-- FirebaseUI Auth Activity -->
+        <activity
+            android:name="com.firebase.ui.auth.KickoffActivity"
+            android:exported="false"
+            tools:node="merge">
+        </activity>
 
         <!-- Firebase Meta-Data -->
         <meta-data
             android:name="com.google.firebase.analytics.APPLICATION_ID"
             android:value="@string/google_app_id"/>
+
+
     </application>
 </manifest>

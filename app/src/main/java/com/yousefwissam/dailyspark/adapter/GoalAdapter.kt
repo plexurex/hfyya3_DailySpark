@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yousefwissam.dailyspark.R
-import com.yousefwissam.dailyspark.data.Goal
+import com.yousefwissam.dailyspark.data.model.Goal
 
 class GoalAdapter(private val goals: List<Goal>) : RecyclerView.Adapter<GoalAdapter.GoalViewHolder>() {
 

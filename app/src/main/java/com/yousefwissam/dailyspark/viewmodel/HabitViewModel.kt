@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.repository.HabitRepository
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.data.repository.HabitRepository
 import com.yousefwissam.dailyspark.worker.ResetHabitWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

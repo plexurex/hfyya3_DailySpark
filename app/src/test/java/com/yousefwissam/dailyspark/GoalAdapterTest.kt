@@ -1,6 +1,6 @@
 package com.yousefwissam.dailyspark
 
-import com.yousefwissam.dailyspark.data.Goal
+import com.yousefwissam.dailyspark.data.model.Goal
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.mock

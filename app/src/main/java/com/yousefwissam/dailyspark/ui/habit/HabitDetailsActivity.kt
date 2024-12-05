@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark.ui
+package com.yousefwissam.dailyspark.ui.habit
 
 import android.os.Bundle
 import android.widget.Button
@@ -14,8 +14,8 @@ import androidx.work.workDataOf
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.R
-import com.yousefwissam.dailyspark.data.Goal
-import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.data.model.Goal
+import com.yousefwissam.dailyspark.data.model.Habit
 import com.yousefwissam.dailyspark.worker.ResetHabitWorker
 import java.util.concurrent.TimeUnit
 

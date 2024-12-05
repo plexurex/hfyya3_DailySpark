@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark.data
+package com.yousefwissam.dailyspark.data.model
 
 data class Goal(
     var id: String = "",

@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark.ui
+package com.yousefwissam.dailyspark.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yousefwissam.dailyspark.R
-import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.data.model.Habit
 
 class HabitAdapter(
     private var habits: MutableList<Habit>,

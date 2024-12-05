@@ -6,15 +6,13 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestoreException
 //import com.google.firebase.firestore.TaskCompletionSource
-import com.yousefwissam.dailyspark.data.Habit
-import com.yousefwissam.dailyspark.repository.HabitRepository
+import com.yousefwissam.dailyspark.data.model.Habit
+import com.yousefwissam.dailyspark.data.repository.HabitRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations

@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark.ui
+package com.yousefwissam.dailyspark.ui.habit
 
 import android.content.Intent
 import android.graphics.Typeface
@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.yousefwissam.dailyspark.AddHabitActivity
-import com.yousefwissam.dailyspark.MainActivity
-import com.yousefwissam.dailyspark.ProfileActivity
+import com.yousefwissam.dailyspark.ui.main.MainActivity
+import com.yousefwissam.dailyspark.ui.profile.ProfileActivity
 import com.yousefwissam.dailyspark.R
-import com.yousefwissam.dailyspark.SettingsActivity
-import com.yousefwissam.dailyspark.data.Habit
+import com.yousefwissam.dailyspark.ui.settings.SettingsActivity
+import com.yousefwissam.dailyspark.adapter.HabitAdapter
+import com.yousefwissam.dailyspark.data.model.Habit
 
 class EditHabitActivity : AppCompatActivity() {
 

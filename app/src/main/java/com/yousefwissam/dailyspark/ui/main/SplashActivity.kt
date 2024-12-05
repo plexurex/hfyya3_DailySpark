@@ -1,4 +1,4 @@
-package com.yousefwissam.dailyspark
+package com.yousefwissam.dailyspark.ui.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.yousefwissam.dailyspark.R
 import com.yousefwissam.dailyspark.ui.AuthenticationActivity
 
 class SplashActivity : AppCompatActivity() {
