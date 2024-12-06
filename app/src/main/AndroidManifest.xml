@@ -10,11 +10,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- Ensure you have Google services properly declared -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
-        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -92,6 +90,9 @@
         <meta-data
             android:name="com.google.firebase.analytics.APPLICATION_ID"
             android:value="@string/google_app_id"/>
+
+
+
 
 
     </application>

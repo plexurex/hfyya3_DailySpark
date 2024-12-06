@@ -121,20 +121,24 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Handle navigation item selection
     private fun setupNavigation() {
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                // Handle navigation to main menu
                 R.id.nav_main_menu -> startActivity(Intent(this, MainActivity::class.java))
+                // Handle navigation to add habit
                 R.id.nav_add_habit -> startActivity(Intent(this, AddHabitActivity::class.java))
+                // Handle navigation to edit habit
                 R.id.nav_edit_habit -> startActivity(Intent(this, EditHabitActivity::class.java))
+                // Handle navigation to settings
                 R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
-                R.id.nav_profile -> drawerLayout.closeDrawers()
+                // Handle navigation to profile
             }
             true
         }
     }
-
+    // Load user profile and update UI
     private fun loadUserProfile() {
         val user = auth.currentUser
         user?.let { currentUser ->
@@ -153,7 +157,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
         }
     }
-
+    // Update user name
     private fun updateUserName(newName: String) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -171,7 +175,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
         }
     }
-
+    // Load user points
     private fun loadUserPoints() {
         db.collection("rewards").whereEqualTo("userid", userId).get()
             .addOnSuccessListener { documents ->
@@ -188,15 +192,15 @@ class ProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error loading points", Toast.LENGTH_SHORT).show()
             }
     }
-
+    // Display badges based on points
     private fun displayBadges(currentPoints: Int) {
         val pointsThresholds = arrayOf(50, 100, 150, 200, 300)
         val badges = arrayOf(
-            R.drawable.badge_5_days,
-            R.drawable.badge_10_days,
-            R.drawable.badge_15_days,
-            R.drawable.badge_20_days,
-            R.drawable.badge_25_days
+            R.drawable.badge_5_days,// 50 points
+            R.drawable.badge_10_days,// 100 points
+            R.drawable.badge_15_days,// 150 points
+            R.drawable.badge_20_days,// 200 points
+            R.drawable.badge_25_days // 250 points
         )
 
         var badgeToShow: Int? = null
@@ -217,13 +221,13 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Set up RecyclerView
     private fun setupRecyclerView() {
         goalAdapter = GoalAdapter(goals)
         goalsRecyclerView.layoutManager = LinearLayoutManager(this)
         goalsRecyclerView.adapter = goalAdapter
     }
-
+    // Load user goals
     private fun loadUserGoals() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let {
@@ -244,7 +248,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-
+    // Load user habits
     private fun loadUserHabits() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let {
@@ -269,20 +273,20 @@ class ProfileActivity : AppCompatActivity() {
                 }
         }
     }
-
+    // Add a new goal
     private fun addGoal() {
         val description = goalDescriptionEditText.text.toString()
         val targetDays = goalTargetEditText.text.toString().toIntOrNull()
 
         if (description.isNotBlank() && targetDays != null && targetDays > 0 && selectedHabit != null) {
             val newGoal = Goal(
-                habitId = selectedHabit!!.id,
-                habitName = selectedHabit!!.name,
-                description = description,
-                targetDays = targetDays,
-                progress = 0
+                habitId = selectedHabit!!.id,// Set the habit ID
+                habitName = selectedHabit!!.name,// Set the habit name
+                description = description,// Set the goal description
+                targetDays = targetDays,// Set the target days
+                progress = 0// Initialize progress to 0
             )
-
+            // Add the goal to Firestore
             db.collection("goals").document(userId).collection("userGoals").add(newGoal)
                 .addOnSuccessListener { documentReference ->
                     newGoal.id = documentReference.id

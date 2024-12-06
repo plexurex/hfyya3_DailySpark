@@ -72,21 +72,27 @@ class AddHabitActivity : AppCompatActivity() {
         // Handle navigation item selection
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                // Handle navigation to main menu
                 R.id.nav_main_menu -> {
                     startActivity(Intent(this, MainActivity::class.java))
                 }
+                // Handle navigation to add habit
                 R.id.nav_add_habit -> {
                     startActivity(Intent(this, AddHabitActivity::class.java))
                 }
+                // Handle navigation to edit habit
                 R.id.nav_edit_habit -> {
                     startActivity(Intent(this, EditHabitActivity::class.java))
                 }
+                // Handle navigation to settings
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 }
+                // Handle navigation to profile
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                 }
+
             }
             drawerLayout.closeDrawers()
             true
@@ -113,11 +119,11 @@ class AddHabitActivity : AppCompatActivity() {
             if (habitName.isNotEmpty() && habitFrequency.isNotEmpty()) {
                 val userId = auth.currentUser?.uid
                 if (userId != null) {
-                    val newHabit = Habit(
-                        name = habitName,
-                        frequency = habitFrequency,
-                        createdDate = System.currentTimeMillis(),
-                        userId = userId // Include the user ID
+                    val newHabit = Habit( // Create a new Habit object with the provided data
+                        name = habitName, // Use the provided habit name
+                        frequency = habitFrequency,// Use the provided habit frequency
+                        createdDate = System.currentTimeMillis(),// Set the creation date to the current time
+                        userId = userId // Set the user ID associated with the habit
                     )
                     saveHabitToFirestore(newHabit)
                 } else {
@@ -128,7 +134,7 @@ class AddHabitActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Save the habit to Firestore
     private fun saveHabitToFirestore(habit: Habit) {
         val currentUser = auth.currentUser
         currentUser?.let {

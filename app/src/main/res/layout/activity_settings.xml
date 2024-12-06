@@ -31,13 +31,6 @@
             android:text="Enable Notifications"
             android:textSize="18sp" /> <!-- Increase text size here -->
 
-<!--        &lt;!&ndash; Theme Switch &ndash;&gt;-->
-<!--        <Switch-->
-<!--            android:id="@+id/themeSwitch"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Enable Dark Theme"-->
-<!--            android:textSize="18sp" /> &lt;!&ndash; Increase text size here &ndash;&gt;-->
 
         <!-- Delete Data Button -->
         <Button

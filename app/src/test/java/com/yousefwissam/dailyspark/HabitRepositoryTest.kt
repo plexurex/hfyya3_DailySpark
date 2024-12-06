@@ -21,20 +21,20 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class HabitRepositoryTest {
 
-    @Mock
+    @Mock // Mock the FirebaseFirestore instance
     private lateinit var mockFirestore: FirebaseFirestore
 
-    @Mock
+    @Mock// Mock the CollectionReference instance
     private lateinit var mockCollection: CollectionReference
 
-    @Mock
+    @Mock // Mock the QuerySnapshot instance
     private lateinit var mockSnapshot: QuerySnapshot
 
-    @Mock
+    @Mock // Mock the DocumentReference instance
     private lateinit var mockDocument: DocumentReference
 
-    private lateinit var habitRepository: HabitRepository
-
+    private lateinit var habitRepository: HabitRepository // Class under test
+    // Mock the FirebaseFirestore instance
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)

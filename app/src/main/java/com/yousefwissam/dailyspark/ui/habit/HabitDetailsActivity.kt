@@ -57,7 +57,7 @@ class HabitDetailsActivity : AppCompatActivity() {
             saveHabitDetails()
         }
     }
-
+// Get habit by ID from Firestore
     private fun getHabitById(habitId: String) {
         db.collection("habits").document(habitId).get()
             .addOnSuccessListener { document ->
@@ -74,6 +74,7 @@ class HabitDetailsActivity : AppCompatActivity() {
 
                         // Check if the habit can be completed based on frequency
                         val nextAvailableTime = when (habit.frequency) {
+                            // Calculate the next available completion time based on frequency
                             "Daily" -> lastCompletionTime + TimeUnit.DAYS.toMillis(1)
                             "Weekly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(7)
                             "Monthly" -> lastCompletionTime + TimeUnit.DAYS.toMillis(30)

@@ -67,17 +67,13 @@ class SettingsActivity : AppCompatActivity() {
 
         setButtonListeners()
     }
-
+    // Initialize Firebase
     private fun initializeFirebase() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
     }
 
-    fun injectDependencies(auth: FirebaseAuth, db: FirebaseFirestore) {
-        this.auth = auth
-        this.db = db
-    }
-
+    // Check if the test is running
     private fun isRunningInTest(): Boolean {
         return try {
             Class.forName("org.robolectric.Robolectric")
@@ -86,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
             false
         }
     }
-
+    // Set up the toolbar
     private fun setupToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -106,7 +102,7 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.addView(titleTextView)
     }
-
+    // Set up navigation
     private fun setupNavigation() {
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.navigationView)
@@ -122,24 +118,29 @@ class SettingsActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                // Handle navigation to main menu
                 R.id.nav_main_menu -> startActivity(Intent(this, MainActivity::class.java))
+                // Handle navigation to add habit
                 R.id.nav_add_habit -> startActivity(Intent(this, AddHabitActivity::class.java))
+                // Handle navigation to edit habit
                 R.id.nav_edit_habit -> startActivity(Intent(this, EditHabitActivity::class.java))
+                // Handle navigation to settings
                 R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+                // Handle navigation to profile
                 R.id.nav_profile -> startActivity(Intent(this, ProfileActivity::class.java))
             }
             drawerLayout.closeDrawers()
             true
         }
     }
-
+    // Initialize UI components
     private fun initializeUIComponents() {
         deleteDataButton = findViewById(R.id.deleteDataButton)
         deleteGoalsButton = findViewById(R.id.deleteGoalsButton)
         notificationSwitch = findViewById(R.id.notificationSwitch)
         logoutButton = findViewById(R.id.logoutButton)
     }
-
+    // Set up button listeners
     private fun setButtonListeners() {
         deleteDataButton.setOnClickListener {
             deleteAllHabits()
@@ -176,7 +177,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Delete all habits and associated goals
     private fun deleteAllHabits() {
         db.collection("habits").get()
             .addOnSuccessListener { documents ->
@@ -203,7 +204,7 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error deleting all habits", Toast.LENGTH_SHORT).show()
             }
     }
-
+    // Delete all goals
     private fun deleteAllGoals() {
         db.collection("goals").document("currentUser").collection("userGoals").get()
             .addOnSuccessListener { documents ->
@@ -219,14 +220,14 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error deleting all goals", Toast.LENGTH_SHORT).show()
             }
     }
-
+    // Logout user
     fun logoutUser() {
         auth.signOut()
         startActivity(Intent(this, AuthenticationActivity::class.java))
         finish()
         Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
-
+    // Schedule daily notification
     companion object {
         fun scheduleDailyNotification(context: Context) {
             val currentTime = System.currentTimeMillis()
@@ -256,7 +257,7 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(context, "Daily notification scheduled", Toast.LENGTH_SHORT).show()
         }
     }
-
+    // Cancel daily notification
     private fun cancelDailyNotification() {
         WorkManager.getInstance(this).cancelUniqueWork("DailyNotificationWork")
         Toast.makeText(this, "Daily notification cancelled", Toast.LENGTH_SHORT).show()

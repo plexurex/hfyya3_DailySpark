@@ -3,11 +3,11 @@ package com.yousefwissam.dailyspark.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yousefwissam.dailyspark.data.model.Habit
 import kotlinx.coroutines.tasks.await
-
+// HabitRepository class responsible for managing habit-related operations
 class HabitRepository(private val db: FirebaseFirestore) {
-
+// Collection reference for habits
     private val habitsCollection = db.collection("habits")
-
+// Mark a habit as completed
     suspend fun markHabitAsCompleted(habit: Habit) {
         val updatedHabit = habit.copy(
             completed = true,
@@ -40,20 +40,9 @@ class HabitRepository(private val db: FirebaseFirestore) {
     suspend fun insertOrUpdate(habit: Habit) {
         try {
             habitsCollection.document(habit.id).set(habit).await()
-        } catch (e: Exception) {
+        } catch (e: Exception) {// Handle exceptions
             // Optionally, log or handle the error as needed
         }
     }
 
-    // Delete all habits
-    suspend fun deleteAll() {
-        try {
-            val snapshot = habitsCollection.get().await()
-            for (document in snapshot.documents) {
-                habitsCollection.document(document.id).delete().await()
-            }
-        } catch (e: Exception) {
-            // Optionally, log or handle the error as needed
-        }
-    }
 }

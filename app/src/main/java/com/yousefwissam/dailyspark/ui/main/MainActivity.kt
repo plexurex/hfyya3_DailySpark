@@ -139,18 +139,23 @@ class MainActivity : AppCompatActivity() {
         // Handle navigation item selection
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                // Handle navigation to main menu
                 R.id.nav_main_menu -> {
                     startActivity(Intent(this, MainActivity::class.java))
                 }
+                // Handle navigation to add habit
                 R.id.nav_add_habit -> {
                     startActivity(Intent(this, AddHabitActivity::class.java))
                 }
+                // Handle navigation to edit habit
                 R.id.nav_edit_habit -> {
                     startActivity(Intent(this, EditHabitActivity::class.java))
                 }
+                // Handle navigation to settings
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 }
+                // Handle navigation to profile
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                 }
@@ -170,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         // Load habits
         loadAllHabits()
     }
-
+    // Firebase Authentication
     private fun startFirebaseSignIn() {
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build()
@@ -184,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             RC_SIGN_IN
         )
     }
-
+    // Handle Firebase Authentication result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {
@@ -201,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Load all habits from Firestore
     fun loadAllHabits() {
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -227,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
         }
     }
-
+    // Navigate to Habit Details
     private fun navigateToHabitDetails(habit: Habit) {
         val intent = Intent(this, HabitDetailsActivity::class.java)
         intent.putExtra("HABIT_ID", habit.id)

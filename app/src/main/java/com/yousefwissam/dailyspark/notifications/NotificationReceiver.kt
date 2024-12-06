@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.yousefwissam.dailyspark.utils.NotificationUtils
-
+// NotificationReceiver class to handle notification events
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         // Show the notification

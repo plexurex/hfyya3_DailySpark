@@ -1,17 +1,17 @@
 package com.yousefwissam.dailyspark.data.model
-
+// Habit data class representing a habit with various properties
 import java.io.Serializable
-
+// Habit data class representing a habit with various properties
 data class Habit(
-    var id: String = "", // Ensure there's a default value
-    var name: String = "", // Default value for the name
-    var frequency: String = "", // Default value for frequency
-    var createdDate: Long = 0L, // Default value for createdDate
-    var completed: Boolean = false, // Default value for completed
-    var comment: String = "", // Default value for comment
-    var currentStreak: Int = 0,  // Tracks the current consecutive days completed
-    var longestStreak: Int = 0,   // The longest streak of days the habit has been completed consecutively
-    var lastCompleted: Long = 0, // Timestamp of the last completion
-    var lastCompletionTime: Long = 0L,
-    var userId: String = ""
+    var id: String = "",// Unique identifier for the habit
+    var name: String = "",// Name of the habit
+    var frequency: String = "",// Frequency of the habit (e.g., daily, weekly)
+    var createdDate: Long = 0L,// Timestamp when the habit was created
+    var completed: Boolean = false,// Flag indicating if the habit is completed
+    var comment: String = "",// Comment associated with the habit
+    var currentStreak: Int = 0,// Current streak of completing the habit
+    var longestStreak: Int = 0,// Longest streak of completing the habit
+    var lastCompleted: Long = 0,// Timestamp of the last time the habit was completed
+    var lastCompletionTime: Long = 0L,// Timestamp of the last completion of the habit
+    var userId: String = ""// Identifier of the user associated with the habit
 ) : Serializable

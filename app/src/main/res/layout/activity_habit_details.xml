@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
+    <!-- name and frequency text views -->
     <TextView
         android:id="@+id/textViewHabitName"
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:text="Habit Frequency"
         android:textSize="16sp"
         android:layout_marginBottom="16dp" />
-
+    <!-- checkbox and comment input fields -->
     <CheckBox
         android:id="@+id/checkBoxCompleted"
         android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:hint="Add a comment..."
         android:layout_marginBottom="16dp" />
-
+    <!-- save button -->
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"

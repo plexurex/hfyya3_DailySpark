@@ -23,7 +23,7 @@ class AuthenticationActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
     private val db = FirebaseFirestore.getInstance()
-
+    // Initialize Firebase Auth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,7 +65,7 @@ class AuthenticationActivity : AppCompatActivity() {
             }
         }
     }
-
+    // Handle login button click
     private fun loginUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -77,7 +77,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
             }
     }
-
+    // Handle registration button click
     private fun registerUser(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -94,7 +94,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
             }
     }
-
+    // Update UI based on authentication result
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             // Ask for notification permission after successful registration or login

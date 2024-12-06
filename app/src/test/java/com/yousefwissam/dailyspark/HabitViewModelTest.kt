@@ -20,18 +20,18 @@ import org.mockito.MockitoAnnotations
 class HabitViewModelTest {
 
     @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    var instantTaskExecutorRule = InstantTaskExecutorRule() // Required for LiveData
 
     @Mock
-    private lateinit var habitRepository: HabitRepository
+    private lateinit var habitRepository: HabitRepository // Mock the repository
 
     @Mock
-    private lateinit var habitObserver: Observer<List<Habit>>
+    private lateinit var habitObserver: Observer<List<Habit>> // Mock the observer
 
     @Mock
-    private lateinit var context: Context
+    private lateinit var context: Context // Mock the context
 
-    private lateinit var viewModel: HabitViewModel
+    private lateinit var viewModel: HabitViewModel // Class under test
 
     @Before
     fun setUp() {

@@ -4,27 +4,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
+    <!-- email input field -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email" />
-
+        <!-- password input field -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword" />
-
+    <!-- login button -->
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
         android:layout_marginTop="16dp" />
-
+    <!-- register button -->
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="match_parent"

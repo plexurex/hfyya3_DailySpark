@@ -21,7 +21,7 @@ class DailyNotificationWorker(
 
         // Build and show the notification
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app icon
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("DailySpark Reminder")
             .setContentText("Don't forget to complete your habit today!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)

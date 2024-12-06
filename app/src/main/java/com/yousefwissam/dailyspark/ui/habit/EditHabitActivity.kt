@@ -80,18 +80,23 @@ class EditHabitActivity : AppCompatActivity() {
         // Handle navigation item selection
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                // Handle navigation to main menu
                 R.id.nav_main_menu -> {
                     startActivity(Intent(this, MainActivity::class.java))
                 }
+                // Handle navigation to add habit
                 R.id.nav_add_habit -> {
                     startActivity(Intent(this, AddHabitActivity::class.java))
                 }
+                // Handle navigation to edit habit
                 R.id.nav_edit_habit -> {
                     startActivity(Intent(this, EditHabitActivity::class.java))
                 }
+                // Handle navigation to settings
                 R.id.nav_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 }
+                // Handle navigation to profile
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                 }
@@ -146,11 +151,11 @@ class EditHabitActivity : AppCompatActivity() {
                 .addOnSuccessListener { documents ->
                     val habits = documents.map { document ->
                         Habit(
-                            id = document.id,
-                            name = document.getString("name") ?: "",
-                            frequency = document.getString("frequency") ?: "",
-                            createdDate = document.getLong("createdDate") ?: 0,
-                            userId = it.uid
+                            id = document.id,// Set the ID of the habit
+                            name = document.getString("name") ?: "",// Set the name of the habit
+                            frequency = document.getString("frequency") ?: "",// Set the frequency of the habit
+                            createdDate = document.getLong("createdDate") ?: 0,// Set the creation date of the habit
+                            userId = it.uid // Set the user ID of the habit
                         )
                     }
                     habitAdapter.updateData(habits)

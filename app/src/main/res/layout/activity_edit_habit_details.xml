@@ -5,26 +5,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
+    <!-- name input field -->
     <EditText
         android:id="@+id/editHabitNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Habit Name" />
-
+    <!-- edit frequency input field -->
     <EditText
         android:id="@+id/editHabitFrequencyInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Habit Frequency" />
-
+    <!-- save changes button -->
     <Button
         android:id="@+id/saveEditButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save Changes"
         android:layout_gravity="center" />
-
+    <!-- delete habit button -->
     <Button
         android:id="@+id/buttonDeleteHabit"
         android:layout_width="wrap_content"

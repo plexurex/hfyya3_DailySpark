@@ -14,7 +14,7 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.`when`
 
 class GoalAdapterTest {
-
+    // Test cases for GoalAdapter
     private fun mockLayoutInflater(): LayoutInflater {
         val li = mock(LayoutInflater::class.java)
         val viewGroup = mock(ViewGroup::class.java)

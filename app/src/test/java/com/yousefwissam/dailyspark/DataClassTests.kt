@@ -7,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DataClassTests {
-
+    // Test cases for Goal
     @Test
     fun `test Goal default values`() {
         val goal = Goal()

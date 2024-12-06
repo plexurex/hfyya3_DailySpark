@@ -38,7 +38,7 @@ class TrackHabitActivity : AppCompatActivity() {
             }
         }
     }
-
+// Track habit progress in Firestore
     private fun trackHabitProgress(habit: Habit) {
         val habitRef = db.collection("habits").document(habit.id)
         db.runTransaction { transaction ->

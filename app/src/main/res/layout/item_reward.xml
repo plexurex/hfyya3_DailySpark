@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp">
-
+    <!-- reward name -->
     <TextView
         android:id="@+id/textViewRewardName"
         android:layout_width="wrap_content"
@@ -12,7 +12,7 @@
         android:text="Badge Name"
         android:textSize="16sp"
         android:textStyle="bold"/>
-
+    <!-- reward points -->
     <TextView
         android:id="@+id/textViewRewardPoints"
         android:layout_width="wrap_content"

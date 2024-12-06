@@ -18,7 +18,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         auth = FirebaseAuth.getInstance()
-
+        // Delay for 3 seconds before checking user authentication
         Handler(Looper.getMainLooper()).postDelayed({
             val currentUser = auth.currentUser
             if (currentUser != null) {

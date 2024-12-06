@@ -28,7 +28,7 @@
             android:padding="16dp"
             android:textColor="@color/lightTextColor"
             android:fontFamily="@font/daily_spark_font" />
-
+        <!-- recycler view -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
-
+            <!-- add habit button -->
             <Button
                 android:id="@+id/addHabitButton"
                 android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                 android:padding="16dp"
                 android:textStyle="bold"
                 android:layout_marginEnd="16dp" />
-
+            <!-- edit habit button -->
             <Button
                 android:id="@+id/editHabitButton"
                 android:layout_width="wrap_content"
@@ -64,7 +64,7 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
+        <!-- quote -->
         <TextView
             android:id="@+id/textViewQuote"
             android:layout_width="wrap_content"
