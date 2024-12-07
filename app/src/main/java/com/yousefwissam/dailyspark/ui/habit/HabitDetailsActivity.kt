@@ -136,7 +136,7 @@ class HabitDetailsActivity : AppCompatActivity() {
                     Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT).show()
                     // Update points if the habit is completed
                     if (completed) {
-                        updatePoints(10) // Assuming 10 points per habit completion
+                        updatePoints(10) // 10 points per completed habit
                         completedCheckbox.isEnabled = false // Disable checkbox until reset
                         scheduleHabitReset(getCurrentHabit())
                         updateGoalProgress(habitId!!)
